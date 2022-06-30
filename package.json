@@ -1,0 +1,23 @@
+{
+  "name": "rmrk-dao-consolidator",
+  "version": "0.0.1",
+  "description": "Custom RMRK consolidator for the RMRK::DAO project",
+  "main": "index.js",
+  "repository": "git@gitlab.com:rmrk-dao/rmrk-dao-consolidator.git",
+  "author": "Spencer Brown <git@spencerwebservices.com>",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "dotenv -e .env node ./build/main.js",
+    "dev": "dotenv -e .env.development ts-node ./src/main.ts"
+  },
+  "dependencies": {
+    "@types/node": "^18.0.0",
+    "dotenv-cli": "^5.1.0",
+    "pg": "^8.7.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.21.2",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4"
+  }
+}
