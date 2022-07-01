@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs https//pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model NFT2 {
+  id           String  @id
+  block        Int
+  collection   String
+  symbol       String
+  transferable Int
+  sn           String
+  metadata     String?
+  forsale      BigInt
+  reactions    Json
+  changes      Json
+  owner        String
+  rootowner    String
+  burned       String
+  equipped     String?
+  priority     Json
+  children     Json
+  resources    Json
+  properties   Json?
+  pending      Boolean
+
+  @@map("nft2")
+}

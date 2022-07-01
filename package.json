@@ -9,13 +9,21 @@
   "scripts": {
     "build": "tsc",
     "start": "dotenv -e .env node ./build/main.js",
-    "dev": "dotenv -e .env.development ts-node ./src/main.ts"
+    "dev": "dotenv -e .env.development ts-node ./src/main.ts",
+    "consolidate": "dotenv -e .env.development ts-node ./src/rmrk2/consolidator.ts",
+    "prisma:generate": "npx prisma generate",
+    "postinstall": "yarn prisma:generate"
   },
   "dependencies": {
+    "@polkadot/api": "^8.10.1",
+    "@prisma/client": "4.0.0",
     "@types/node": "^18.0.0",
+    "JSONStream": "^1.3.5",
     "dotenv-cli": "^5.1.0",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
+    "prisma": "^4.0.0",
+    "rmrk-tools": "^2.0.85",
     "sequelize": "^6.21.2",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
