@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model NFT2 {
+model Nft2 {
   id           String  @id
   block        Int
   collection   String
@@ -32,4 +32,6 @@ model NFT2 {
   pending      Boolean
 
   @@map("nft2")
+  @@index([block])
+  @@index([collection])
 }
