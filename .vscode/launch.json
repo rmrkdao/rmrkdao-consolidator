@@ -16,5 +16,11 @@
       "request": "launch",
       "type": "node-terminal"
     }, 
+    {
+      "command": "yarn consolidate",
+      "name": "yarn consolidate",
+      "request": "launch",
+      "type": "node-terminal"
+    },
   ]
 }

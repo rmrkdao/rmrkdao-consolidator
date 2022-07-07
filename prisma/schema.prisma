@@ -31,7 +31,20 @@ model Nft2 {
   properties   Json?
   pending      Boolean
 
-  @@map("nft2")
   @@index([block])
   @@index([collection])
+  @@map("nft2")
+}
+
+model Collection2 {
+  id       String @id
+  block    Int
+  max      Int
+  issuer   String
+  symbol   String
+  metadata String
+  changes  Json
+  count    Int
+
+  @@map("collection2")
 }

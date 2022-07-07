@@ -3,3 +3,4 @@ build/
 data/
 .env*
 !.env.example
+private

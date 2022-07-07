@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+import '../patch'
 import { stringToHex } from '@polkadot/util'
 import fs from 'fs'
 import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
@@ -77,8 +78,8 @@ const consolidate = async () => {
 
   const ss58Format = (chainSs58Format as number) || 2
 
-  const file = process.env.RMRK_1_DUMP_FILE
-  const out = process.env.RMRK_1_CONSOLIDATED_FILE
+  const file = process.env.RMRK_2_DUMP_FILE
+  const out = process.env.RMRK_2_CONSOLIDATED_FILE
 
   if (!file) {
     console.error('File path must be provided')
@@ -97,15 +98,12 @@ const consolidate = async () => {
 
   const remarks = getRemarks(rawdata, prefixes, ss58Format)
   console.log('got remarks', remarks.length)
-  const consolidator = new Consolidator(ss58Format, new PgAdapter())
+  const consolidator = new Consolidator(ss58Format)
   let result = await consolidator.consolidate(remarks)
 
-  //@ts-ignore
-  BigInt.prototype.toJSON = function () {
-    return this.toString()
-  }
   const lastBlock = rawdata[rawdata.length - 1]?.block || 0
   fs.writeFileSync(`${out}`, JSON.stringify({ ...result, lastBlock }))
+  await api.disconnect()
   process.exit(0)
 }
 

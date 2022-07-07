@@ -1,5 +1,5 @@
-import { Nft2, Prisma } from '@prisma/client'
-import { NFT, Base, Collection, consolidatedNFTtoInstance } from 'rmrk-tools'
+import { Collection2, Nft2, Prisma } from '@prisma/client'
+import { NFT, Base, Collection } from 'rmrk-tools'
 import { AcceptEntityType } from 'rmrk-tools/dist/classes/accept'
 import { IConsolidatorAdapter } from 'rmrk-tools/dist/tools/consolidator/adapters/types'
 import {
@@ -10,10 +10,8 @@ import {
 import { prisma } from '../db'
 
 export class PgAdapter implements IConsolidatorAdapter {
-  public collections: Record<string, CollectionConsolidated>
   public bases: Record<string, BaseConsolidated>
   constructor() {
-    this.collections = {}
     this.bases = {}
   }
 
@@ -23,20 +21,30 @@ export class PgAdapter implements IConsolidatorAdapter {
     const nftMap: Record<string, NFTConsolidated> = {}
 
     nfts.forEach((nft) => {
-      nftMap[nft.id] = PgAdapter.convertFromDBFormat(nft)
+      nftMap[nft.id] = PgAdapter.convertNftFromDB(nft)
     })
 
     return nftMap
   }
 
   public async getAllCollections() {
-    return this.collections
+    const collections = await prisma.collection2.findMany()
+    const collectionMap: Record<string, CollectionConsolidated> = {}
+    collections.forEach(
+      (collection) =>
+        (collectionMap[collection.id] =
+          PgAdapter.convertCollectionFromDB(collection))
+    )
+    return collectionMap
   }
 
   public async getAllBases() {
     return this.bases
   }
 
+  /**
+   * @mutation
+   */
   public async updateNFTEmote(nft: NFT, consolidatedNFT: NFTConsolidated) {
     await prisma.nft2.update({
       where: { id: consolidatedNFT.id },
@@ -46,6 +54,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateBaseEquippable(
     base: Base,
     consolidatedBase: BaseConsolidated
@@ -56,6 +67,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     }
   }
 
+  /**
+   * @mutation
+   */
   public async updateNFTList(nft: NFT, consolidatedNFT: NFTConsolidated) {
     await prisma.nft2.update({
       where: { id: consolidatedNFT.id },
@@ -66,6 +80,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateEquip(nft: NFT, consolidatedNFT: NFTConsolidated) {
     await prisma.nft2.update({
       where: { id: consolidatedNFT.id },
@@ -76,6 +93,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateSetPriority(nft: NFT, consolidatedNFT: NFTConsolidated) {
     await prisma.nft2.update({
       where: { id: consolidatedNFT.id },
@@ -85,6 +105,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateSetAttribute(nft: NFT, consolidatedNFT: NFTConsolidated) {
     await prisma.nft2.update({
       where: { id: consolidatedNFT.id },
@@ -94,6 +117,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateNftAccept(
     nft: NFT,
     consolidatedNFT: NFTConsolidated,
@@ -112,6 +138,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateNftResadd(nft: NFT, consolidatedNFT: NFTConsolidated) {
     await prisma.nft2.update({
       where: { id: consolidatedNFT.id },
@@ -122,6 +151,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateNFTChildrenRootOwner(
     nft: NFT | NFTConsolidated,
     rootowner?: string,
@@ -156,6 +188,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     return updatedChildren
   }
 
+  /**
+   * @mutation
+   */
   public async updateNFTBuy(nft: NFT, consolidatedNFT: NFTConsolidated) {
     await prisma.nft2.update({
       where: { id: consolidatedNFT.id },
@@ -168,6 +203,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateNFTSend(nft: NFT, consolidatedNFT: NFTConsolidated) {
     await prisma.nft2.update({
       where: { id: consolidatedNFT.id },
@@ -181,71 +219,105 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateNFTBurn(
     nft: NFT | NFTConsolidated,
     consolidatedNFT: NFTConsolidated
   ) {
-    await prisma.nft2.update({
-      where: { id: consolidatedNFT.id },
-      data: {
-        burned: nft?.burned,
-        changes: nft?.changes,
-        equipped: '',
-        forsale: BigInt(nft.forsale) > BigInt(0) ? BigInt(0) : nft.forsale,
-      },
-    })
-
-    // TODO: convert to pg
-    this.collections[consolidatedNFT.collection].count =
-      this.collections[consolidatedNFT.collection].count - 1
+    await prisma.$transaction([
+      prisma.nft2.update({
+        where: { id: consolidatedNFT.id },
+        data: {
+          burned: nft?.burned,
+          changes: nft?.changes,
+          equipped: '',
+          forsale: BigInt(nft.forsale) > BigInt(0) ? BigInt(0) : nft.forsale,
+        },
+      }),
+      // Decrement collection count
+      prisma.collection2.update({
+        where: { id: consolidatedNFT.collection },
+        data: {
+          count: { decrement: 1 },
+        },
+      }),
+    ])
   }
 
+  /**
+   * @mutation
+   */
   public async updateNFTMint(nft: NFT) {
-    await prisma.nft2.create({
+    await prisma.$transaction([
+      prisma.nft2.create({
+        data: {
+          id: nft.getId(),
+          block: nft.block,
+          collection: nft.collection,
+          symbol: nft.symbol,
+          transferable: nft.transferable,
+          sn: nft.sn,
+          metadata: nft.metadata,
+          forsale: nft.forsale,
+          reactions: JSON.parse(JSON.stringify(nft.reactions)),
+          changes: JSON.parse(JSON.stringify(nft.changes)),
+          owner: nft.owner,
+          rootowner: nft.rootowner,
+          burned: nft.burned,
+          priority: nft.priority,
+          children: JSON.parse(JSON.stringify(nft.children)),
+          resources: JSON.parse(JSON.stringify(nft.resources)),
+          properties: JSON.parse(JSON.stringify(nft.properties)),
+          pending: nft.pending,
+          equipped: null,
+        },
+      }),
+      // Increment collection count
+      prisma.collection2.update({
+        where: { id: nft.collection },
+        data: {
+          count: { increment: 1 },
+        },
+      }),
+    ])
+  }
+
+  /**
+   * @mutation
+   */
+  public async updateCollectionMint(collection: CollectionConsolidated) {
+    return await prisma.collection2.create({
       data: {
-        id: nft.getId(),
-        block: nft.block,
-        collection: nft.collection,
-        symbol: nft.symbol,
-        transferable: nft.transferable,
-        sn: nft.sn,
-        metadata: nft.metadata,
-        forsale: nft.forsale,
-        reactions: JSON.parse(JSON.stringify(nft.reactions)),
-        changes: JSON.parse(JSON.stringify(nft.changes)),
-        owner: nft.owner,
-        rootowner: nft.rootowner,
-        burned: nft.burned,
-        priority: nft.priority,
-        children: JSON.parse(JSON.stringify(nft.children)),
-        resources: JSON.parse(JSON.stringify(nft.resources)),
-        properties: JSON.parse(JSON.stringify(nft.properties)),
-        pending: nft.pending,
-        equipped: null,
+        ...collection,
       },
     })
-
-    // TODO:
-    this.collections[nft.collection].count =
-      this.collections[nft.collection].count + 1
   }
 
-  public async updateCollectionMint(collection: CollectionConsolidated) {
-    return (this.collections[collection.id] = collection)
-  }
-
+  /**
+   * @mutation
+   */
   public async updateCollectionDestroy(collection: CollectionConsolidated) {
-    return delete this.collections[collection.id]
+    return await prisma.collection2.delete({ where: { id: collection.id } })
   }
 
+  /**
+   * @mutation
+   */
   public async updateCollectionLock(collection: CollectionConsolidated) {
     const nfts = await this.getNFTsByCollection(collection.id)
-    return (this.collections[collection.id] = {
-      ...collection,
-      max: (nfts || []).filter((nft) => nft.burned === '').length,
+    return await prisma.collection2.update({
+      where: { id: collection.id },
+      data: {
+        max: (nfts || []).filter((nft) => nft.burned === '').length,
+      },
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateBase(base: Base) {
     return (this.bases[base.getId()] = {
       ...base,
@@ -253,6 +325,9 @@ export class PgAdapter implements IConsolidatorAdapter {
     })
   }
 
+  /**
+   * @mutation
+   */
   public async updateBaseThemeAdd(
     base: Base,
     consolidatedBase: BaseConsolidated
@@ -263,17 +338,25 @@ export class PgAdapter implements IConsolidatorAdapter {
     }
   }
 
+  /**
+   * @mutation
+   */
   public async updateCollectionIssuer(
     collection: Collection,
     consolidatedCollection: CollectionConsolidated
   ) {
-    this.collections[consolidatedCollection.id] = {
-      ...this.collections[consolidatedCollection.id],
-      issuer: collection?.issuer,
-      changes: collection?.changes,
-    }
+    await prisma.collection2.update({
+      where: { id: consolidatedCollection.id },
+      data: {
+        issuer: collection.issuer,
+        changes: collection.changes,
+      },
+    })
   }
 
+  /**
+   * @mutation
+   */
   public async updateBaseIssuer(
     base: Base,
     consolidatedBase: BaseConsolidated
@@ -288,7 +371,7 @@ export class PgAdapter implements IConsolidatorAdapter {
   public async getNFTsByCollection(collectionId: string) {
     return (
       await prisma.nft2.findMany({ where: { collection: collectionId } })
-    ).map(PgAdapter.convertFromDBFormat)
+    ).map(PgAdapter.convertNftFromDB)
   }
 
   public async getNFTById(id: string) {
@@ -296,7 +379,10 @@ export class PgAdapter implements IConsolidatorAdapter {
   }
 
   public async getCollectionById(id: string) {
-    return this.collections[id]
+    const collection = await prisma.collection2.findUnique({ where: { id } })
+    return collection
+      ? PgAdapter.convertCollectionFromDB(collection)
+      : undefined
   }
 
   /**
@@ -307,14 +393,14 @@ export class PgAdapter implements IConsolidatorAdapter {
     if (nftFromDb === null) {
       return undefined
     }
-    return PgAdapter.convertFromDBFormat(nftFromDb)
+    return PgAdapter.convertNftFromDB(nftFromDb)
   }
 
   public async getBaseById(id: string) {
     return this.bases[id]
   }
 
-  static convertFromDBFormat(nft: Nft2): NFTConsolidated {
+  static convertNftFromDB(nft: Nft2): NFTConsolidated {
     return {
       id: nft.id,
       block: nft.block,
@@ -336,5 +422,20 @@ export class PgAdapter implements IConsolidatorAdapter {
       pending: nft.pending,
       equipped: nft.equipped || undefined,
     }
+  }
+
+  static convertCollectionFromDB(
+    collection: Collection2
+  ): CollectionConsolidated {
+    return {
+      ...collection,
+      changes: collection.changes as any,
+    }
+  }
+
+  async updateLastRemarkMeta() {
+    // Consider the case of updateNFTSend and then multiple calls of updateNFTChildrenRootOwner.
+    // Also, consider possibly save insert/update statements as a way to snapshot the rows to be updated for a given remark before each of the database mutations per remark to be processed.
+    // After the remark is fully processed, then those insert/update statements can be removed atomically when the `last_processed_rmrk` row is updated.
   }
 }
