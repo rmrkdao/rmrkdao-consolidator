@@ -98,7 +98,8 @@ const consolidate = async () => {
 
   const remarks = getRemarks(rawdata, prefixes, ss58Format)
   console.log('got remarks', remarks.length)
-  const consolidator = new Consolidator(ss58Format)
+  const pgAdapter = new PgAdapter()
+  const consolidator = new Consolidator(ss58Format, pgAdapter)
   let result = await consolidator.consolidate(remarks)
 
   const lastBlock = rawdata[rawdata.length - 1]?.block || 0

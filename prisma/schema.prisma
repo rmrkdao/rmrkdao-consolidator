@@ -50,15 +50,29 @@ model Collection2 {
 }
 
 model Base2 {
-  id String @id
-  block Int
-  symbol String
-  issuer String
-  type String?
-  parts Json?
-  changes Json
-  themes Json?
+  id       String  @id
+  block    Int
+  symbol   String
+  issuer   String
+  type     String?
+  parts    Json?
+  changes  Json
+  themes   Json?
   metadata String?
 
   @@map("base2")
+}
+
+model History2 {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now()) @map("created_at")
+  schemaName String   @map("schema_name")
+  tableName  String   @map("table_name")
+  operation  String
+  user       String   @default(dbgenerated("current_user"))
+  newValue   Json?    @map("new_value")
+  oldValue   Json?    @map("old_value")
+
+  @@index([createdAt])
+  @@map("history2")
 }
