@@ -48,3 +48,17 @@ model Collection2 {
 
   @@map("collection2")
 }
+
+model Base2 {
+  id String @id
+  block Int
+  symbol String
+  issuer String
+  type String?
+  parts Json?
+  changes Json
+  themes Json?
+  metadata String?
+
+  @@map("base2")
+}

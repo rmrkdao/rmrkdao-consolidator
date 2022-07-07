@@ -1,4 +1,4 @@
-import { Collection2, Nft2, Prisma } from '@prisma/client'
+import { Base2, Collection2, Nft2, Prisma } from '@prisma/client'
 import { NFT, Base, Collection } from 'rmrk-tools'
 import { AcceptEntityType } from 'rmrk-tools/dist/classes/accept'
 import { IConsolidatorAdapter } from 'rmrk-tools/dist/tools/consolidator/adapters/types'
@@ -10,11 +10,6 @@ import {
 import { prisma } from '../db'
 
 export class PgAdapter implements IConsolidatorAdapter {
-  public bases: Record<string, BaseConsolidated>
-  constructor() {
-    this.bases = {}
-  }
-
   public async getAllNFTs() {
     const nfts = await prisma.nft2.findMany()
 
@@ -39,7 +34,12 @@ export class PgAdapter implements IConsolidatorAdapter {
   }
 
   public async getAllBases() {
-    return this.bases
+    const bases = await prisma.base2.findMany()
+    const baseMap: Record<string, BaseConsolidated> = {}
+    bases.forEach(
+      (base) => (baseMap[base.id] = PgAdapter.convertBaseFromDB(base))
+    )
+    return baseMap
   }
 
   /**
@@ -61,10 +61,12 @@ export class PgAdapter implements IConsolidatorAdapter {
     base: Base,
     consolidatedBase: BaseConsolidated
   ) {
-    this.bases[consolidatedBase.id] = {
-      ...this.bases[consolidatedBase.id],
-      parts: base?.parts,
-    }
+    await prisma.base2.update({
+      where: { id: consolidatedBase.id },
+      data: {
+        parts: base?.parts as any,
+      },
+    })
   }
 
   /**
@@ -319,9 +321,18 @@ export class PgAdapter implements IConsolidatorAdapter {
    * @mutation
    */
   public async updateBase(base: Base) {
-    return (this.bases[base.getId()] = {
-      ...base,
-      id: base.getId(),
+    return await prisma.base2.create({
+      data: {
+        id: base.getId(),
+        block: base.block,
+        symbol: base.symbol,
+        issuer: base.issuer,
+        type: base.type,
+        parts: base.parts as any,
+        changes: base.changes,
+        themes: base.themes,
+        metadata: base.metadata,
+      },
     })
   }
 
@@ -332,10 +343,12 @@ export class PgAdapter implements IConsolidatorAdapter {
     base: Base,
     consolidatedBase: BaseConsolidated
   ) {
-    this.bases[consolidatedBase.id] = {
-      ...this.bases[consolidatedBase.id],
-      themes: base?.themes,
-    }
+    await prisma.base2.update({
+      where: { id: consolidatedBase.id },
+      data: {
+        themes: base?.themes,
+      },
+    })
   }
 
   /**
@@ -361,11 +374,13 @@ export class PgAdapter implements IConsolidatorAdapter {
     base: Base,
     consolidatedBase: BaseConsolidated
   ) {
-    this.bases[consolidatedBase.id] = {
-      ...this.bases[consolidatedBase.id],
-      issuer: base?.issuer,
-      changes: base?.changes,
-    }
+    await prisma.base2.update({
+      where: { id: consolidatedBase.id },
+      data: {
+        issuer: base?.issuer,
+        changes: base?.changes,
+      },
+    })
   }
 
   public async getNFTsByCollection(collectionId: string) {
@@ -397,7 +412,8 @@ export class PgAdapter implements IConsolidatorAdapter {
   }
 
   public async getBaseById(id: string) {
-    return this.bases[id]
+    const base = await prisma.base2.findUnique({ where: { id } })
+    return base ? PgAdapter.convertBaseFromDB(base) : undefined
   }
 
   static convertNftFromDB(nft: Nft2): NFTConsolidated {
@@ -430,6 +446,17 @@ export class PgAdapter implements IConsolidatorAdapter {
     return {
       ...collection,
       changes: collection.changes as any,
+    }
+  }
+
+  static convertBaseFromDB(base: Base2): BaseConsolidated {
+    return {
+      ...base,
+      type: base.type as any,
+      parts: base.parts as any,
+      changes: base.changes as any,
+      themes: base.themes as any,
+      metadata: base.metadata || undefined,
     }
   }
 
