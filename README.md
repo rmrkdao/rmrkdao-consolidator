@@ -13,3 +13,13 @@ Then run the consolidate command:
 ```
 yarn consolidate
 ```
+
+## Development
+
+### Cross development
+To use a local copy of the `rmrk-tools` module, run the following:
+1. `cd path/to/rmrk-tools`
+1. `yarn link`
+1. `cd path/to/rmrk-dao-consolidator`
+1. `yarn link rmrk-tools`
+1. `yarn install`

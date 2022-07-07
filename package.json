@@ -24,7 +24,6 @@
     "pg-hstore": "^2.3.4",
     "prisma": "^4.0.0",
     "rmrk-tools": "^2.0.85",
-    "sequelize": "^6.21.2",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
   }

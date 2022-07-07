@@ -76,3 +76,19 @@ model History2 {
   @@index([createdAt])
   @@map("history2")
 }
+
+model ConsolidationInfo {
+  version String @id
+  latestBlock Int @map("latest_block")
+  latestRmrkOffset Int @map("latest_rmrk_offset")
+  status LatestConsolidatingRmrkStatus
+
+  @@map("consolidation_info")
+}
+
+enum LatestConsolidatingRmrkStatus {
+  processing
+  complete
+
+  @@map("latest_consolidating_rmrk_status")
+}

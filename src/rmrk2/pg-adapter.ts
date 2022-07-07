@@ -1,4 +1,10 @@
-import { Base2, Collection2, Nft2, Prisma } from '@prisma/client'
+import {
+  Base2,
+  Collection2,
+  LatestConsolidatingRmrkStatus,
+  Nft2,
+  Prisma,
+} from '@prisma/client'
 import { NFT, Base, Collection } from 'rmrk-tools'
 import { AcceptEntityType } from 'rmrk-tools/dist/classes/accept'
 import { IConsolidatorAdapter } from 'rmrk-tools/dist/tools/consolidator/adapters/types'
@@ -7,9 +13,47 @@ import {
   CollectionConsolidated,
   BaseConsolidated,
 } from 'rmrk-tools/dist/tools/consolidator/consolidator'
+import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 import { prisma } from '../db'
 
 export class PgAdapter implements IConsolidatorAdapter {
+  async beforeProcessingRemark(remark: Remark): Promise<any> {
+    await prisma.consolidationInfo.upsert({
+      where: { version: '2.0.0' },
+      create: {
+        version: '2.0.0',
+        latestBlock: remark.block,
+        latestRmrkOffset: remark.offset,
+        status: LatestConsolidatingRmrkStatus.processing,
+      },
+      update: {
+        latestBlock: remark.block,
+        latestRmrkOffset: remark.offset,
+        status: LatestConsolidatingRmrkStatus.processing,
+      },
+    })
+  }
+
+  async afterProcessingRemark(remark: Remark): Promise<any> {
+    await prisma.$transaction([
+      prisma.consolidationInfo.upsert({
+        where: { version: '2.0.0' },
+        create: {
+          version: '2.0.0',
+          latestBlock: remark.block,
+          latestRmrkOffset: remark.offset,
+          status: LatestConsolidatingRmrkStatus.complete,
+        },
+        update: {
+          latestBlock: remark.block,
+          latestRmrkOffset: remark.offset,
+          status: LatestConsolidatingRmrkStatus.complete,
+        },
+      }),
+      prisma.history2.deleteMany(),
+    ])
+  }
+
   public async getAllNFTs() {
     const nfts = await prisma.nft2.findMany()
 
