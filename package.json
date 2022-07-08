@@ -12,7 +12,8 @@
     "dev": "dotenv -e .env ts-node ./src/main.ts",
     "consolidate": "dotenv -e .env ts-node ./src/rmrk2/consolidator.ts",
     "prisma:generate": "npx prisma generate",
-    "postinstall": "yarn prisma:generate"
+    "postinstall": "yarn prisma:generate",
+    "test": "jest"
   },
   "dependencies": {
     "@polkadot/api": "^8.10.1",
@@ -26,5 +27,10 @@
     "rmrk-tools": "^2.0.85",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.4",
+    "jest": "^28.1.2",
+    "ts-jest": "^28.0.5"
   }
 }

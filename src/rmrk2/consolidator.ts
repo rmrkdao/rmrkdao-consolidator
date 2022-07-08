@@ -1,77 +1,22 @@
-#! /usr/bin/env node
 import '../patch'
-import { stringToHex } from '@polkadot/util'
 import fs from 'fs'
-import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 
-// @ts-ignore
-import JSONStream from 'JSONStream'
-import { ApiPromise, WsProvider } from '@polkadot/api'
-import { Consolidator, getRemarksFromBlocks } from 'rmrk-tools'
+import { Consolidator } from 'rmrk-tools'
 import { PgAdapter } from './pg-adapter'
-
-export const prefixToArray = (prefix: string): string[] =>
-  prefix.split(',').map((item) => {
-    if (item.indexOf('0x') === 0) {
-      return item
-    }
-    return stringToHex(item)
-  })
-
-export const getApi = async (wsEndpoint: string): Promise<ApiPromise> => {
-  const wsProvider = new WsProvider(wsEndpoint)
-  const api = ApiPromise.create({ provider: wsProvider })
-  return api
-}
-
-export const appendPromise = (appendFilePath: string): Promise<any[]> =>
-  new Promise((resolve, reject) => {
-    try {
-      const appendFileStream: any[] = []
-      const readStream = fs.createReadStream(appendFilePath)
-      const parseStream = JSONStream.parse('*')
-      parseStream.on('data', (fileChunk: Record<string, unknown>) => {
-        if (fileChunk) {
-          appendFileStream.push(fileChunk)
-        }
-      })
-
-      readStream.pipe(parseStream)
-
-      readStream.on('finish', async () => {
-        resolve(appendFileStream)
-      })
-
-      readStream.on('end', async () => {
-        resolve(appendFileStream)
-      })
-
-      readStream.on('error', (error) => {
-        reject(error)
-      })
-    } catch (error: any) {
-      console.error(error)
-      reject(error)
-    }
-  })
-
-const getRemarks = (
-  inputData: any,
-  prefixes: string[],
-  ss58Format?: number
-): Remark[] => {
-  let blocks = inputData
-
-  return getRemarksFromBlocks(blocks, prefixes, ss58Format)
-}
+import {
+  appendPromise,
+  filterByUnProcessedRemarks,
+  getApi,
+  getRemarks,
+  prefixes,
+} from './utils'
+import { prisma } from '../db'
 
 const consolidate = async () => {
   const ws = process.env.KUSAMA_NODE_WS || ''
   const api = await getApi(ws)
 
   console.log('got api connection')
-
-  const prefixes = prefixToArray('0x726d726b,0x524d524b')
 
   const systemProperties = await api.rpc.system.properties()
   const { ss58Format: chainSs58Format } = systemProperties.toHuman()
@@ -97,6 +42,21 @@ const consolidate = async () => {
   console.log(`Loaded ${rawdata.length} blocks with remark calls`)
 
   const remarks = getRemarks(rawdata, prefixes, ss58Format)
+
+  // Get the latest consolidation info
+  // TODO: Confirm assumption that this will throw error when database is not available
+  const consolidationInfo = await prisma.consolidationInfo.findUnique({
+    where: { version: '2.0.0' },
+  })
+  if (consolidationInfo) {
+    // Filters in place
+    filterByUnProcessedRemarks(
+      remarks,
+      consolidationInfo.latestBlock,
+      consolidationInfo.latestRmrkOffset,
+      consolidationInfo.status
+    )
+  }
   console.log('got remarks', remarks.length)
   const pgAdapter = new PgAdapter()
   const consolidator = new Consolidator(ss58Format, pgAdapter)
