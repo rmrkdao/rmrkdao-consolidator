@@ -1,4 +1,4 @@
-import { LatestConsolidatingRmrkStatus } from '@prisma/client'
+import { LatestConsolidatingRmrkStatus, Prisma } from '@prisma/client'
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import { stringToHex } from '@polkadot/util'
 import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
@@ -7,6 +7,7 @@ import { getRemarksFromBlocks } from 'rmrk-tools'
 import JSONStream from 'JSONStream'
 import fs from 'fs'
 import '../patch'
+import { prisma } from '../db'
 
 export const prefixToArray = (prefix: string): string[] =>
   prefix.split(',').map((item) => {
@@ -96,4 +97,76 @@ export function filterByUnProcessedRemarks(
         : 'Status is not set!'
     )
   }
+}
+
+export const restoreFromHistory = async () => {
+  // Get array of changes from history table in descending time order
+  const changes = await prisma.history2.findMany({
+    orderBy: { id: 'desc' },
+  })
+
+  // Undo the change based on the operation
+  for (const change of changes) {
+    let processed = 0
+    const table = `"${change.schemaName}"."${change.tableName}"`
+
+    switch (change.operation) {
+      case 'INSERT':
+        if (hasId(change.newValue)) {
+          const currentId = change.newValue.id
+
+          processed = await prisma.$executeRaw`
+            delete from ${Prisma.raw(table)} where id = ${currentId};
+          `
+        }
+        break
+
+      case 'UPDATE':
+        if (hasId(change.oldValue) && hasId(change.newValue)) {
+          const currentId = change.newValue.id
+          // @ts-ignore
+          const columns = Object.keys(change.oldValue)
+            .map((x) => `"${x}"`)
+            .join(',')
+
+          processed = await prisma.$executeRaw`
+              update ${Prisma.raw(table)} set (${Prisma.raw(columns)}) = (
+                (
+                  select ${Prisma.raw(
+                    columns
+                  )} from jsonb_populate_record(null::${Prisma.raw(table)}, ${
+            change.oldValue
+          }))
+                )
+                where id = ${currentId};
+            `
+        }
+        break
+
+      case 'DELETE':
+        processed = await prisma.$executeRaw`
+              insert into ${Prisma.raw(
+                table
+              )} select * from jsonb_populate_record(null::${Prisma.raw(
+          table
+        )}, ${change.oldValue});
+            `
+        break
+
+      default:
+        break
+    }
+
+    if (!processed) {
+      throw new Error(
+        `Unable to undo ${change.operation} where history2.id = ${change.id}`
+      )
+    }
+  }
+
+  await prisma.history2.deleteMany()
+}
+
+export function hasId(input: any): input is { id: string } {
+  return !!input && typeof input === 'object' && 'id' in input
 }
