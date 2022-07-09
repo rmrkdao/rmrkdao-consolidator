@@ -170,3 +170,12 @@ export const restoreFromHistory = async () => {
 export function hasId(input: any): input is { id: string } {
   return !!input && typeof input === 'object' && 'id' in input
 }
+
+export function batch<T>(array: T[], size: number) {
+  const batches = []
+  while (array.length) {
+    const batch = array.splice(0, size)
+    batches.push(batch)
+  }
+  return batches
+}
