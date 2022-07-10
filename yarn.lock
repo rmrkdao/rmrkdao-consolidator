@@ -1343,6 +1343,11 @@
     jest-matcher-utils "^28.0.0"
     pretty-format "^28.0.0"
 
+"@types/lodash@^4.14.182":
+  version "4.14.182"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.182.tgz#05301a4d5e62963227eaafe0ce04dd77c54ea5c2"
+  integrity sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==
+
 "@types/node-fetch@^2.6.2":
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.6.2.tgz#d1a9c5fd049d9415dce61571557104dec3ec81da"

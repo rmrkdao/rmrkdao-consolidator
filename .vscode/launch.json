@@ -22,5 +22,11 @@
       "request": "launch",
       "type": "node-terminal"
     },
+    {
+      "command": "yarn import-from-json",
+      "name": "yarn import-from-json",
+      "request": "launch",
+      "type": "node-terminal"
+    },
   ]
 }

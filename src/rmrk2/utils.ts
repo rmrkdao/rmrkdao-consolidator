@@ -8,6 +8,7 @@ import JSONStream from 'JSONStream'
 import fs from 'fs'
 import '../patch'
 import { prisma } from '../db'
+import _ from 'lodash'
 
 export const prefixToArray = (prefix: string): string[] =>
   prefix.split(',').map((item) => {
@@ -171,7 +172,8 @@ export function hasId(input: any): input is { id: string } {
   return !!input && typeof input === 'object' && 'id' in input
 }
 
-export function batch<T>(array: T[], size: number) {
+export function batch<T>(elements: T[] | Object, size: number) {
+  const array = Array.isArray(elements) ? elements : _.values(elements)
   const batches = []
   while (array.length) {
     const batch = array.splice(0, size)

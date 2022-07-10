@@ -3,6 +3,7 @@ const fs = require('fs')
 import { prisma } from '../db'
 import arg from 'arg'
 import { batch } from './utils'
+import { LatestConsolidatingRmrkStatus } from '@prisma/client'
 
 const main = async () => {
   const args = arg({
@@ -24,47 +25,55 @@ const main = async () => {
     const content = fs.readFileSync(args['--in'])
     const data = JSON.parse(content)
 
-    await prisma.$transaction(
-      async (prisma) => {
-        await prisma.nft2.deleteMany()
-        await prisma.collection2.deleteMany()
-        await prisma.base2.deleteMany()
-        await prisma.consolidationInfo.deleteMany()
-        await prisma.history2.deleteMany()
-        // nfts, collections, bases, consolidationInfo
-        for (const nftBatch of batch(data.nfts, 1000)) {
-          await prisma.nft2.createMany({
-            // @ts-ignore
-            data: nftBatch.map((x: { forsale: string }) => ({
-              ...x,
-              forsale: BigInt(x.forsale),
-            })),
-          })
-        }
-        for (const collectionsBatch of batch(data.collections, 1000)) {
-          await prisma.collection2.createMany({
-            // @ts-ignore
-            data: collectionsBatch,
-          })
-        }
-        for (const basesBatch of batch(data.bases, 1000)) {
-          await prisma.base2.createMany({
-            // @ts-ignore
-            data: basesBatch,
-          })
-        }
-        for (const consolidationInfoBatch of batch(
-          data.consolidationInfo,
-          1000
-        )) {
-          await prisma.consolidationInfo.createMany({
-            // @ts-ignore
-            data: consolidationInfoBatch,
-          })
-        }
-      },
-      { maxWait: 3600, timeout: 3600 }
-    )
+    await prisma.nft2.deleteMany()
+    await prisma.collection2.deleteMany()
+    await prisma.base2.deleteMany()
+    await prisma.consolidationInfo.deleteMany()
+    await prisma.history2.deleteMany()
+    // nfts, collections, bases, consolidationInfo
+    for (const nftBatch of batch(data.nfts, 1000)) {
+      await prisma.nft2.createMany({
+        // @ts-ignore
+        data: nftBatch.map((x: { forsale: string }) => ({
+          ...x,
+          forsale: BigInt(x.forsale),
+        })),
+      })
+    }
+    for (const collectionsBatch of batch(data.collections, 1000)) {
+      await prisma.collection2.createMany({
+        // @ts-ignore
+        data: collectionsBatch,
+      })
+    }
+    for (const basesBatch of batch(data.bases, 1000)) {
+      await prisma.base2.createMany({
+        // @ts-ignore
+        data: basesBatch,
+      })
+    }
+    // Import file must either have 'lastBlock' or 'consolidationInfoBatch' data
+    if ('lastBlock' in data) {
+      // Signal that the next remark to be processed should be the first in the next block
+      await prisma.consolidationInfo.createMany({
+        data: {
+          version: '2.0.0',
+          latestBlock: data.lastBlock + 1,
+          latestRmrkOffset: 0,
+          status: LatestConsolidatingRmrkStatus.processing,
+        },
+      })
+    } else {
+      for (const consolidationInfoBatch of batch(
+        data.consolidationInfo,
+        1000
+      )) {
+        await prisma.consolidationInfo.createMany({
+          // @ts-ignore
+          data: consolidationInfoBatch,
+        })
+      }
+    }
   } catch (err) {
     console.error(err)
   }
