@@ -9,9 +9,13 @@ Optionally, use SSH tunneling to connect to a Kusama node behind a firewall. For
 ssh -N configName -L 9944:127.0.0.1:9944
 ```
 
-Then run the consolidate command:
+Next, the database will need to be populated. There are two options to populate the database:
+1. Use a block dump file and then using `yarn consolidate`
+1. Import a previous export using `yarn import-from-json`
+
+Finally, after the database has been initially populated, the server can start to listen for new blocks and process them in real-time:
 ```
-yarn consolidate
+yarn build && yarn start
 ```
 
 ## Development

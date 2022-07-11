@@ -27,7 +27,7 @@
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
     "prisma": "^4.0.0",
-    "rmrk-tools": "^2.0.85",
+    "rmrk-tools": "https://github.com/spenweb/rmrk-tools/releases/download/3.0.0/rmrk-tools-v3.0.0.tgz",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
   },
