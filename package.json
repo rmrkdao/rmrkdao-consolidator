@@ -11,7 +11,7 @@
     "build": "tsc",
     "start": "dotenv -e .env node ./build/main.js",
     "dev": "dotenv -e .env ts-node ./src/main.ts",
-    "consolidate": "dotenv -e .env ts-node ./src/rmrk2/consolidator.ts",
+    "consolidate": "dotenv -e .env ts-node ./src/cli/consolidate.ts",
     "prisma:generate": "npx prisma generate",
     "postinstall": "yarn prisma:generate",
     "export": "ts-node ./src/rmrk2/export.ts",

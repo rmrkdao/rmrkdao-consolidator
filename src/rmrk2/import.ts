@@ -29,7 +29,6 @@ const main = async () => {
     await prisma.collection2.deleteMany()
     await prisma.base2.deleteMany()
     await prisma.consolidationInfo.deleteMany()
-    await prisma.history2.deleteMany()
     // nfts, collections, bases, consolidationInfo
     for (const nftBatch of batch(data.nfts, 1000)) {
       await prisma.nft2.createMany({
@@ -74,6 +73,7 @@ const main = async () => {
         })
       }
     }
+    await prisma.history2.deleteMany()
   } catch (err) {
     console.error(err)
   }
