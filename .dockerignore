@@ -1,0 +1,16 @@
+.vscode/
+node_modules/
+build/
+scripts/
+private/
+coverage/
+data/
+.env*
+.git
+.gitignore
+.prettierrc
+docker-compose.yaml
+.values.local.yaml
+.values.production.yaml
+.values.staging.yaml
+.gitlab-ci.yml

@@ -8,6 +8,7 @@
   "private": true,
   "scripts": {
     "test": "jest",
+    "test:docker": "yarn test",
     "build": "tsc",
     "start": "dotenv -e .env node ./build/main.js",
     "dev": "dotenv -e .env ts-node ./src/main.ts",
