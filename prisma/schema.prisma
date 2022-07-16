@@ -2,7 +2,7 @@
 // learn more about it in the docs https//pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
 }
 
@@ -79,12 +79,21 @@ model History2 {
 }
 
 model ConsolidationInfo {
-  version String @id
-  latestBlock Int @map("latest_block")
-  latestRmrkOffset Int @map("latest_rmrk_offset")
-  status LatestConsolidatingRmrkStatus
+  version          String                        @id
+  latestBlock      Int                           @map("latest_block")
+  latestRmrkOffset Int                           @map("latest_rmrk_offset")
+  status           LatestConsolidatingRmrkStatus
 
   @@map("consolidation_info")
+}
+
+model ConsolidationLock {
+  version   String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+  user      String
+  key       String   @default(uuid())
+
+  @@map("consolidation_lock")
 }
 
 enum LatestConsolidatingRmrkStatus {

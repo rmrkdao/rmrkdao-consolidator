@@ -1,12 +1,50 @@
-import { ApiPromise } from '@polkadot/api'
 import { LatestConsolidatingRmrkStatus } from '@prisma/client'
 import { fetchRemarks } from 'rmrk-tools'
 import { prisma } from './db'
 import './patch'
 import { consolidate } from './rmrk2/consolidator'
 import { getApi, prefixes } from './rmrk2/utils'
+import { ConsolidationLock } from './services/consolidation-lock'
+import exitHook from 'async-exit-hook'
+
+const lock = new ConsolidationLock('2.0.0')
 
 const main = async () => {
+  // Acquire lock
+  if (!(await lock.wait(30000))) {
+    throw new Error('Unable to acquire consolidation lock')
+  }
+  console.log(
+    `Acquired consolidation lock ${lock.key} for version ${lock.version} and user ${lock.user}`
+  )
+  // Start listening for new blocks and processing them
+  await listenAndProcess()
+}
+
+// Release the acquired consolidation lock from the database, if any
+exitHook(async (callback) => {
+  console.log('gracefully exiting')
+  if (lock.key) {
+    const result = await lock.unlock()
+    if (result) {
+      console.log(`Released lock ${result}`)
+    } else {
+      console.log(`Unable to release lock ${lock.key}`)
+    }
+  }
+
+  await prisma.$disconnect()
+
+  callback()
+})
+
+// Start
+main().catch(console.error)
+
+/**
+ * Listen to new blocks and process unprocessed blocks
+ */
+const listenAndProcess = async () => {
   const ws = process.env.KUSAMA_NODE_WS || ''
   const api = await getApi(ws)
   console.log('got api connection')
@@ -64,9 +102,3 @@ const main = async () => {
     syncLock = false
   })
 }
-
-main()
-  .catch(console.error)
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
