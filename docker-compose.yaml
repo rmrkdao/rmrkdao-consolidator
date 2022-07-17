@@ -11,3 +11,9 @@ services:
       POSTGRES_PASSWORD: rmrk_dao
       POSTGRES_USER: rmrk_dao
       POSTGRES_DB: rmrk_dao
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres: 
+    driver: local
