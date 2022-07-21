@@ -47,6 +47,8 @@ model Collection2 {
   changes  Json
   count    Int
 
+  @@index([issuer])
+  @@index([symbol])
   @@map("collection2")
 }
 
