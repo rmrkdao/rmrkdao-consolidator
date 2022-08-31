@@ -10,6 +10,8 @@ import {
 } from './utils'
 import { prisma } from '../db'
 import { LatestConsolidatingRmrkStatus } from '@prisma/client'
+import { PgDatabaseAdapter } from '../rmrk-dao/database-adapter/pg-database-adapter'
+import { RmrkExtensionHandler } from '../rmrk-dao/rmrk-extension-handler'
 
 export const consolidate = async (data: any[], ss58Format: number) => {
   const remarks = getRemarks(data, prefixes, ss58Format)
@@ -36,7 +38,18 @@ export const consolidate = async (data: any[], ss58Format: number) => {
     )
   }
   console.log('got remarks', remarks.length)
+
+  // TODO: Consider creating these objects once per lifetime of the program
   const pgAdapter = new PgAdapter()
-  const consolidator = new Consolidator(ss58Format, pgAdapter)
+  const rmrkDaoDb = new PgDatabaseAdapter()
+  const remarkExtensionHandler = new RmrkExtensionHandler(rmrkDaoDb)
+
+  const consolidator = new Consolidator(
+    ss58Format,
+    pgAdapter,
+    false,
+    false,
+    remarkExtensionHandler
+  )
   await consolidator.consolidate(remarks)
 }

@@ -98,6 +98,35 @@ model ConsolidationLock {
   @@map("consolidation_lock")
 }
 
+// TODO: Implement history triggers
+model Custodian {
+  custodian    String @id
+  block        Int
+  proposalFee  String // u128
+  voteFee      String // u128
+  recertifyFee String // u128
+  maxOptions   Int
+  changes      Json
+
+  @@index([block])
+}
+
+model Proposal {
+  id               String  @id
+  block            Int
+  custodian        String
+  name             String
+  description      String
+  collections      Json // string[]
+  options          Json // string[]
+  passingThreshold Float?
+  startDate        Float
+  snapshot         Float
+  endDate          Float
+  nftWeight        Boolean
+  electorate       Boolean
+}
+
 enum LatestConsolidatingRmrkStatus {
   processing
   complete

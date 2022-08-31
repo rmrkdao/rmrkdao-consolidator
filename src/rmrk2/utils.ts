@@ -1,4 +1,8 @@
-import { LatestConsolidatingRmrkStatus, Prisma } from '@prisma/client'
+import {
+  Collection2,
+  LatestConsolidatingRmrkStatus,
+  Prisma,
+} from '@prisma/client'
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import { stringToHex } from '@polkadot/util'
 import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
@@ -9,6 +13,7 @@ import fs from 'fs'
 import '../patch'
 import { prisma } from '../db'
 import _ from 'lodash'
+import { Change } from 'rmrk-tools/dist/changelog'
 
 export const prefixToArray = (prefix: string): string[] =>
   prefix.split(',').map((item) => {
@@ -180,4 +185,57 @@ export function batch<T>(elements: T[] | Object, size: number) {
     batches.push(batch)
   }
   return batches
+}
+
+/**
+ * Get the issuer of a collection at a specific block
+ * @param {Collection2} collection
+ * @param {number} block
+ * @returns {string | null} the issuer's address or null if the collection was created before the PROPOSAL
+ * @throws {Error} when the collection's issuer was not able to be determined
+ */
+export const getIssuerAtBlock = (
+  collection: Collection2,
+  block: number
+): string | null => {
+  // Check that the collection was created before the PROPOSAL
+  if (collection.block > block) {
+    return null
+  }
+
+  const sortedChanges = (collection.changes as Change[]).sort(
+    (a, b) => a.block - b.block
+  )
+  const issuerChanges = sortedChanges.filter(
+    (change) => change.field === 'issuer'
+  )
+
+  // If no changes, then the current issuer of the collection is considered the owner of the collection at the specified block
+  if (!issuerChanges?.length) {
+    return collection.issuer
+  }
+
+  // Find the changes that have ocurred before or at the block
+  const issuerChangesUpUntilBlockInclusive = issuerChanges.filter(
+    (change) => change.block <= block
+  )
+
+  // If there are changes at or before the block, then the last change's new value in that group contains the issuer
+  if (issuerChangesUpUntilBlockInclusive.length > 0) {
+    return issuerChangesUpUntilBlockInclusive.at(-1)?.new
+  }
+
+  // Find the changes that have ocurred after the block
+  const issuerChangesAfterBlock = issuerChanges.filter(
+    (change) => change.block > block
+  )
+
+  // If there are changes after the block, then the first change's old value in that group contains the issuer
+  if (issuerChangesAfterBlock.length > 0) {
+    return issuerChangesAfterBlock[0].old
+  }
+
+  throw new Error(
+    `Not able to determine collection ${collection.id} issuer at block ${block}`
+  )
 }

@@ -6,6 +6,7 @@ import { consolidate } from './rmrk2/consolidator'
 import { getApi, prefixes } from './rmrk2/utils'
 import { ConsolidationLock } from './services/consolidation-lock'
 import exitHook from 'async-exit-hook'
+import { KUSAMA_SS58_FORMAT } from './app-constants'
 
 const lock = new ConsolidationLock('2.0.0')
 
@@ -51,11 +52,6 @@ const listenAndProcess = async () => {
   const api = await getApi(ws)
   console.log('got api connection')
 
-  const systemProperties = await api.rpc.system.properties()
-  const { ss58Format: chainSs58Format } = systemProperties.toHuman()
-
-  const ss58Format = (chainSs58Format as number) || 2
-
   // Lock to be used to prevent multiple blocks to be processed simultaneously
   let syncLock = false
 
@@ -85,9 +81,15 @@ const listenAndProcess = async () => {
       for (let x = info.latestBlock; x <= blockNumber; x++) {
         console.log(`Fetching block ${x} (latest: ${blockNumber})`)
 
-        const extracted = await fetchRemarks(api, x, x, prefixes, ss58Format)
+        const extracted = await fetchRemarks(
+          api,
+          x,
+          x,
+          prefixes,
+          KUSAMA_SS58_FORMAT
+        )
         if (extracted.length) {
-          await consolidate(extracted, ss58Format)
+          await consolidate(extracted, KUSAMA_SS58_FORMAT)
         }
       }
 
