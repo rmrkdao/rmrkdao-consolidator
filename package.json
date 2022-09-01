@@ -17,7 +17,8 @@
     "postinstall": "yarn prisma:generate",
     "export": "ts-node ./src/rmrk2/export.ts",
     "import-from-json": "ts-node ./src/rmrk2/import.ts",
-    "sync-block-time": "ts-node ./src/cli/sync-block-time.ts"
+    "sync-block-time": "ts-node ./src/cli/sync-block-time.ts",
+    "example-seed": "dotenv -e .env ts-node ./src/cli/example-seed.ts"
   },
   "dependencies": {
     "@polkadot/api": "^8.10.1",
@@ -36,6 +37,7 @@
     "typescript": "^4.7.4"
   },
   "devDependencies": {
+    "@ngneat/falso": "^6.1.0",
     "@types/async-exit-hook": "^2.0.0",
     "@types/jest": "^28.1.4",
     "@types/lodash": "^4.14.182",

@@ -42,7 +42,7 @@ Object {
   "electorate": false,
   "endDate": 1661983083000,
   "id": "p4P54CxI6J",
-  "name": "Should we start a space flight busines?",
+  "name": "Should we start a space flight business?",
   "nftWeight": true,
   "options": Array [
     "yes",
