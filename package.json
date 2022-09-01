@@ -1,6 +1,6 @@
 {
   "name": "rmrk-dao-consolidator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Custom RMRK consolidator for the RMRK::DAO project",
   "main": "index.js",
   "repository": "git@gitlab.com:rmrk-dao/rmrk-dao-consolidator.git",
