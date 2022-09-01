@@ -1,19 +1,52 @@
-import { IRmrkDaoDatabaseAdapter } from './types'
-import { prisma } from '../../db'
-import { Collection2, Proposal } from '@prisma/client'
-import { Propose } from '../interactions/propose'
-import {
-  getAndSaveBlockTime,
-  getBlockTime,
-  saveBlockTime,
-} from '../../services/block-time'
+import { Collection2, Custodian, Prisma, Proposal } from '@prisma/client'
 import { getApiWithReconnect } from 'rmrk-tools'
 import { KUSAMA_NODE_WS } from '../../app-constants'
+import { prisma } from '../../db'
+import { getAndSaveBlockTime } from '../../services/block-time'
+import { Propose } from '../interactions/propose'
+import { Register } from '../interactions/register'
+import { IRmrkDaoDatabaseAdapter } from './types'
 
 /**
  * Postgres database adapter.
  */
 export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
+  // Find possible CUSTODIAN entity with matching caller's address
+  async upsertCustodian(registerInteraction: Register): Promise<Custodian> {
+    const existingCustodian = await prisma.custodian.findUnique({
+      where: { custodian: registerInteraction.custodian },
+    })
+
+    if (!existingCustodian) {
+      return await prisma.custodian.create({
+        data: {
+          block: registerInteraction.block,
+          custodian: registerInteraction.custodian,
+          voteFee: registerInteraction.voteFee,
+          proposalFee: registerInteraction.proposalFee,
+          recertifyFee: registerInteraction.recertifyFee,
+          maxOptions: registerInteraction.maxOptions,
+          changes: [],
+        },
+      })
+    } else {
+      // Update existing CUSTODIAN entity (@see https://github.com/adamsteeber/rmrkdao-spec/issues/10)
+      let changes = existingCustodian.changes as Prisma.JsonArray
+      changes.push({ ...existingCustodian, changes: undefined }) // TODO: Consider more optimal changes schema
+      return await prisma.custodian.update({
+        where: { custodian: registerInteraction.custodian },
+        data: {
+          block: registerInteraction.block,
+          custodian: registerInteraction.custodian,
+          voteFee: registerInteraction.voteFee,
+          proposalFee: registerInteraction.proposalFee,
+          recertifyFee: registerInteraction.recertifyFee,
+          maxOptions: registerInteraction.maxOptions,
+          changes,
+        },
+      })
+    }
+  }
   async doesProposalExist(proposalId: string): Promise<boolean> {
     const count = await prisma.proposal.count({ where: { id: proposalId } })
     return count > 0

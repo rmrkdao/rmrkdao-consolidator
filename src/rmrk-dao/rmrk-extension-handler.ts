@@ -46,65 +46,47 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
   }
 
   private async register(remark: Remark): Promise<any> {
-    // TODO: Possibly move this logic into the fromRemark method and use the IRmrkDatabaseAdapter
     let registerInteraction: Register
     try {
       registerInteraction = Register.fromRemark(remark)
     } catch (e) {
+      // TODO: Save error to database
       console.log('Invalid REGISTER', e)
-      return true
+      return
     }
 
-    // Find possible CUSTODIAN entity with matching caller's address
-    const existingCustodian = await prisma.custodian.findUnique({
-      where: { custodian: remark.caller },
-    })
+    await registerInteraction.save(this.db)
 
-    if (!existingCustodian) {
-      await prisma.custodian.create({
-        data: {
-          block: registerInteraction.block,
-          custodian: registerInteraction.custodian,
-          voteFee: registerInteraction.voteFee,
-          proposalFee: registerInteraction.proposalFee,
-          recertifyFee: registerInteraction.recertifyFee,
-          maxOptions: registerInteraction.maxOptions,
-          changes: [],
-        },
-      })
-    } else {
-      // Update existing CUSTODIAN entity (@see https://github.com/adamsteeber/rmrkdao-spec/issues/10)
-      let changes = existingCustodian.changes as Prisma.JsonArray
-      changes.push({ ...existingCustodian, changes: undefined }) // TODO: Consider more optimal changes schema
-      await prisma.custodian.update({
-        where: { custodian: registerInteraction.custodian },
-        data: {
-          block: registerInteraction.block,
-          custodian: registerInteraction.custodian,
-          voteFee: registerInteraction.voteFee,
-          proposalFee: registerInteraction.proposalFee,
-          recertifyFee: registerInteraction.recertifyFee,
-          maxOptions: registerInteraction.maxOptions,
-          changes,
-        },
-      })
-    }
+    // Log success
+    console.log(
+      `Processed REGISTER for CUSTODIAN ${registerInteraction.custodian}`
+    )
   }
 
   private async propose(remark: Remark): Promise<any> {
+    let proposeInteraction: Propose | undefined
     try {
-      const proposeInteraction = await Propose.fromRemark(remark, this.db)
-      await proposeInteraction.save(this.db)
+      proposeInteraction = await Propose.fromRemark(remark, this.db)
     } catch (e) {
       // TODO: Save error to database
+      console.log('Invalid PROPOSE', e)
+      return
     }
+
+    // Stop execution if error saving to database (don't catch error)
+    await proposeInteraction.save(this.db)
+
+    // Log success
+    console.log(`Processed REGISTER for CUSTODIAN ${proposeInteraction.id}`)
   }
 
   private async vote(remark: Remark): Promise<any> {
+    console.log('VOTE is not implemented')
     return false
   }
 
   private async deregister(remark: Remark): Promise<any> {
+    console.log('DEREGISTER is not implemented')
     return false
   }
 }

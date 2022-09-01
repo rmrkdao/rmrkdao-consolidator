@@ -1,10 +1,18 @@
 import { Collection2, Custodian, Proposal } from '@prisma/client'
 import { Propose } from '../interactions/propose'
+import { Register } from '../interactions/register'
 
 /**
  * RMRKDAO database adapter
  */
 export interface IRmrkDaoDatabaseAdapter {
+  /**
+   * Create or update CUSTODIAN from register interaction
+   * @param {Register} register
+   * @returns {Promise<Custodian>}
+   */
+  upsertCustodian(register: Register): Promise<Custodian>
+
   /**
    * Check if a proposal already exists in database
    * @param {string} proposalId

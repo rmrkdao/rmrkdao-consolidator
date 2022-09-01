@@ -1,9 +1,10 @@
-import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 import Joi from 'joi'
 import { getRemarkData } from 'rmrk-tools'
-import { u128Validator, validateRemarkDaoBase } from '../../utils'
+import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 import { INTERACTION_TYPES } from '../../app-constants'
 import { ICustodian, IRegisterPayload } from '../../types'
+import { u128Validator, validateRemarkDaoBase } from '../../utils'
+import { IRmrkDaoDatabaseAdapter } from '../database-adapter'
 
 export class Register implements ICustodian {
   block: number
@@ -29,8 +30,15 @@ export class Register implements ICustodian {
     validateRemarkDaoBase(remark.remark, INTERACTION_TYPES.REGISTER)
     let payload = Register.parseData(dataString)
 
+    // TODO: If registering (submitting a REGISTER interaction for an already existing CUSTODIAN) check that the last REGISTER event was 14,400 blocks ago
+    // @see https://github.com/adamsteeber/rmrkdao-spec/blob/38f42e8d3ac54137f1b6d93bced7c880bfc380e9/interactions/REGISTER.md
+
     // Assumes that the remark.caller is in Kusama format
     return new Register(remark.block, remark.caller, payload)
+  }
+
+  async save(db: IRmrkDaoDatabaseAdapter) {
+    await db.upsertCustodian(this)
   }
 
   /**
