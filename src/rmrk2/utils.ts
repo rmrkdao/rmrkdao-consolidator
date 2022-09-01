@@ -56,16 +56,6 @@ export const appendPromise = (appendFilePath: string): Promise<any[]> =>
 
 export const prefixes = prefixToArray(LISTENING_PREFIX_LIST.join(','))
 
-export const getRemarks = (
-  inputData: any,
-  prefixes: string[],
-  ss58Format?: number
-): Remark[] => {
-  let blocks = inputData
-
-  return getRemarksFromBlocks(blocks, prefixes, ss58Format)
-}
-
 /** Filter remarks in-place */
 export function filterByUnProcessedRemarks(
   remarks: Remark[],

@@ -1,11 +1,8 @@
 import { LatestConsolidatingRmrkStatus } from '@prisma/client'
+import { getRemarksFromBlocks } from 'rmrk-tools'
 import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
-import {
-  appendPromise,
-  filterByUnProcessedRemarks,
-  getRemarks,
-  prefixes,
-} from './utils'
+import { KUSAMA_SS58_FORMAT } from '../app-constants'
+import { appendPromise, filterByUnProcessedRemarks, prefixes } from './utils'
 
 let _rawBlocks: any[]
 let _remarks: Remark[]
@@ -13,7 +10,7 @@ let _remarks: Remark[]
 beforeAll(async () => {
   const filePath = 'src/__tests__/data/rmrk_2_dump_5_raw_blocks.json'
   _rawBlocks = await appendPromise(filePath)
-  _remarks = getRemarks(_rawBlocks, prefixes, 2)
+  _remarks = getRemarksFromBlocks(_rawBlocks, prefixes, KUSAMA_SS58_FORMAT)
 })
 
 test('All remark offsets are sequential inside a block', () => {

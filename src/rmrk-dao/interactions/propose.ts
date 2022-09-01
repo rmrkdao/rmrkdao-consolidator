@@ -111,7 +111,7 @@ export class Propose implements IProposal {
       }
     }
 
-    // Get the unix timestamp of the remark's block
+    // Get the unix timestamp milliseconds of the remark's block
     const remarkBlockTimestamp = await db.getBlockTime(remark.block)
 
     if (remarkBlockTimestamp === null) {

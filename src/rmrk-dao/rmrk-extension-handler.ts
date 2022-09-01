@@ -51,7 +51,7 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
       registerInteraction = Register.fromRemark(remark)
     } catch (e) {
       // TODO: Save error to database
-      console.log('Invalid REGISTER', e)
+      console.log('Invalid REGISTER', (e as Error).message)
       return
     }
 
@@ -69,7 +69,7 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
       proposeInteraction = await Propose.fromRemark(remark, this.db)
     } catch (e) {
       // TODO: Save error to database
-      console.log('Invalid PROPOSE', e)
+      console.log('Invalid PROPOSE', (e as Error).message)
       return
     }
 
@@ -77,7 +77,7 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
     await proposeInteraction.save(this.db)
 
     // Log success
-    console.log(`Processed REGISTER for CUSTODIAN ${proposeInteraction.id}`)
+    console.log(`Processed PROPOSE for PROPOSAL ${proposeInteraction.id}`)
   }
 
   private async vote(remark: Remark): Promise<any> {

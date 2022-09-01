@@ -1,10 +1,9 @@
 import '../patch'
 
-import { Consolidator } from 'rmrk-tools'
+import { Consolidator, getRemarksFromBlocks } from 'rmrk-tools'
 import { PgAdapter } from './pg-adapter'
 import {
   filterByUnProcessedRemarks,
-  getRemarks,
   prefixes,
   restoreFromHistory,
 } from './utils'
@@ -14,7 +13,7 @@ import { PgDatabaseAdapter } from '../rmrk-dao/database-adapter/pg-database-adap
 import { RmrkExtensionHandler } from '../rmrk-dao/rmrk-extension-handler'
 
 export const consolidate = async (data: any[], ss58Format: number) => {
-  const remarks = getRemarks(data, prefixes, ss58Format)
+  const remarks = getRemarksFromBlocks(data, prefixes, ss58Format)
 
   // Get the latest consolidation info
   // TODO: Confirm assumption that this will throw error when database is not available
