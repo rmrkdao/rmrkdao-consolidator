@@ -1,6 +1,6 @@
 import { Custodian, Collection2, Proposal } from '@prisma/client'
 import { Propose } from '../interactions/propose'
-import { IRmrkDaoDatabaseAdapter } from './database-adapter-interface'
+import { IRmrkDaoDatabaseAdapter } from './types'
 
 /**
  * In-memory RMRKDAO database adapter (useful for testing purposes)

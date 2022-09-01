@@ -1,1 +1,1 @@
-export { IRmrkDaoDatabaseAdapter } from './database-adapter-interface'
+export { IRmrkDaoDatabaseAdapter } from './types'

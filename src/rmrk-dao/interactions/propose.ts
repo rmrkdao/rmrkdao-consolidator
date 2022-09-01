@@ -14,7 +14,7 @@ import {
   IValidatedProposePayload,
 } from '../../types'
 import { getIssuerAtBlock } from '../../rmrk2/utils'
-import { IRmrkDaoDatabaseAdapter } from '../database-adapter/database-adapter-interface'
+import { IRmrkDaoDatabaseAdapter } from '../database-adapter/'
 
 export class Propose implements IProposal {
   block: number

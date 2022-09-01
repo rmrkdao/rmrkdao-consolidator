@@ -1,11 +1,11 @@
+import { encodeAddress } from '@polkadot/keyring'
+import { CustomValidator } from 'joi'
 import {
   INTERACTION_TYPES,
   KUSAMA_SS58_FORMAT,
   RMRK_DAO_PREFIX,
   VERSION,
 } from './app-constants'
-import { encodeAddress } from '@polkadot/keyring'
-import { CustomValidator } from 'joi'
 
 /**
  * Throws if the RMRK_DAO base is not valid

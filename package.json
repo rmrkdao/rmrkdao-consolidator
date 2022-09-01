@@ -16,7 +16,8 @@
     "prisma:generate": "npx prisma generate",
     "postinstall": "yarn prisma:generate",
     "export": "ts-node ./src/rmrk2/export.ts",
-    "import-from-json": "ts-node ./src/rmrk2/import.ts"
+    "import-from-json": "ts-node ./src/rmrk2/import.ts",
+    "sync-block-time": "ts-node ./src/cli/sync-block-time.ts"
   },
   "dependencies": {
     "@polkadot/api": "^8.10.1",

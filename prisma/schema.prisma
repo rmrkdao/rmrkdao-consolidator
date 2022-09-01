@@ -109,6 +109,7 @@ model Custodian {
   changes      Json
 
   @@index([block])
+  @@map("custodian")
 }
 
 model Proposal {
@@ -125,6 +126,17 @@ model Proposal {
   endDate          Float
   nftWeight        Boolean
   electorate       Boolean
+
+  @@index([block])
+  @@map("proposal")
+}
+
+model BlockTime {
+  block            Int   @id // TODO: Consider using datatype that can hold more numbers
+  unixMilliseconds Float @map("unix_milliseconds")
+
+  @@index([unixMilliseconds])
+  @@map("block_time")
 }
 
 enum LatestConsolidatingRmrkStatus {

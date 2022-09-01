@@ -28,5 +28,11 @@
       "request": "launch",
       "type": "node-terminal"
     },
+    {
+      "command": "yarn sync-block-time",
+      "name": "yarn sync-block-time",
+      "request": "launch",
+      "type": "node-terminal"
+    },
   ]
 }

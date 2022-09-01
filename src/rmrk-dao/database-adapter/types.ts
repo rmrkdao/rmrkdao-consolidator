@@ -34,7 +34,7 @@ export interface IRmrkDaoDatabaseAdapter {
   saveProposal(propose: Propose): Promise<Proposal>
 
   /**
-   * Get the unix time of a block
+   * Get the unix time in milliseconds of a block
    * @param {number} block
    */
   getBlockTime(block: number): Promise<number | null>

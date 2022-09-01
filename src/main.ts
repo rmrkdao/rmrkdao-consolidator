@@ -3,10 +3,12 @@ import { fetchRemarks } from 'rmrk-tools'
 import { prisma } from './db'
 import './patch'
 import { consolidate } from './rmrk2/consolidator'
-import { getApi, prefixes } from './rmrk2/utils'
+import { prefixes } from './rmrk2/utils'
 import { ConsolidationLock } from './services/consolidation-lock'
 import exitHook from 'async-exit-hook'
-import { KUSAMA_SS58_FORMAT } from './app-constants'
+import { KUSAMA_SS58_FORMAT, KUSAMA_NODE_WS } from './app-constants'
+import { getAndSaveBlockTime } from './services/block-time'
+import { getApiWithReconnect } from 'rmrk-tools'
 
 const lock = new ConsolidationLock('2.0.0')
 
@@ -48,8 +50,7 @@ main().catch(console.error)
  * Listen to new blocks and process unprocessed blocks
  */
 const listenAndProcess = async () => {
-  const ws = process.env.KUSAMA_NODE_WS || ''
-  const api = await getApi(ws)
+  const api = await getApiWithReconnect([KUSAMA_NODE_WS])
   console.log('got api connection')
 
   // Lock to be used to prevent multiple blocks to be processed simultaneously
@@ -64,7 +65,6 @@ const listenAndProcess = async () => {
       if (syncLock) {
         return
       }
-
       // Lock
       syncLock = true
 
@@ -78,7 +78,11 @@ const listenAndProcess = async () => {
         throw new Error('Missing consolidation info')
       }
 
+      // info.latestBlock should be the next block that needs to be processed
       for (let x = info.latestBlock; x <= blockNumber; x++) {
+        // Save block unix timestamp
+        await getAndSaveBlockTime(api, x)
+
         console.log(`Fetching block ${x} (latest: ${blockNumber})`)
 
         const extracted = await fetchRemarks(
@@ -88,6 +92,7 @@ const listenAndProcess = async () => {
           prefixes,
           KUSAMA_SS58_FORMAT
         )
+
         if (extracted.length) {
           await consolidate(extracted, KUSAMA_SS58_FORMAT)
         }
@@ -97,7 +102,7 @@ const listenAndProcess = async () => {
       await prisma.consolidationInfo.update({
         where: { version: '2.0.0' },
         data: {
-          latestBlock: blockNumber + 1,
+          latestBlock: blockNumber + 1, // TODO: Consider renaming this to "nextBlock"
           latestRmrkOffset: 0,
           status: LatestConsolidatingRmrkStatus.processing,
         },

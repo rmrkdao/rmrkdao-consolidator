@@ -1,19 +1,19 @@
+import { stringToHex } from '@polkadot/util'
 import {
   Collection2,
   LatestConsolidatingRmrkStatus,
   Prisma,
 } from '@prisma/client'
-import { ApiPromise, WsProvider } from '@polkadot/api'
-import { stringToHex } from '@polkadot/util'
-import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 import { getRemarksFromBlocks } from 'rmrk-tools'
+import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
+import fs from 'fs'
 // @ts-ignore
 import JSONStream from 'JSONStream'
-import fs from 'fs'
-import '../patch'
-import { prisma } from '../db'
 import _ from 'lodash'
 import { Change } from 'rmrk-tools/dist/changelog'
+import { LISTENING_PREFIX_LIST } from '../app-constants'
+import { prisma } from '../db'
+import '../patch'
 
 export const prefixToArray = (prefix: string): string[] =>
   prefix.split(',').map((item) => {
@@ -22,12 +22,6 @@ export const prefixToArray = (prefix: string): string[] =>
     }
     return stringToHex(item)
   })
-
-export const getApi = async (wsEndpoint: string): Promise<ApiPromise> => {
-  const wsProvider = new WsProvider(wsEndpoint)
-  const api = ApiPromise.create({ provider: wsProvider })
-  return api
-}
 
 export const appendPromise = (appendFilePath: string): Promise<any[]> =>
   new Promise((resolve, reject) => {
@@ -60,7 +54,7 @@ export const appendPromise = (appendFilePath: string): Promise<any[]> =>
     }
   })
 
-export const prefixes = prefixToArray('0x726d726b,0x524d524b')
+export const prefixes = prefixToArray(LISTENING_PREFIX_LIST.join(','))
 
 export const getRemarks = (
   inputData: any,

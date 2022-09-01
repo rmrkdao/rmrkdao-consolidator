@@ -1,13 +1,14 @@
 import fs from 'fs'
+import { getApiWithReconnect } from 'rmrk-tools'
+import { KUSAMA_NODE_WS } from '../app-constants'
 import { prisma } from '../db'
 import { consolidate } from '../rmrk2/consolidator'
-import { appendPromise, getApi } from '../rmrk2/utils'
+import { appendPromise } from '../rmrk2/utils'
 
 const main = async () => {
   const file = process.env.RMRK_2_DUMP_FILE
 
-  const ws = process.env.KUSAMA_NODE_WS || ''
-  const api = await getApi(ws)
+  const api = await getApiWithReconnect([KUSAMA_NODE_WS])
   console.log('got api connection')
 
   try {
