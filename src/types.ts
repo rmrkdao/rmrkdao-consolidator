@@ -7,7 +7,7 @@ export interface IRegisterPayload {
 
 export interface ICustodian extends IRegisterPayload {
   block: number
-  custodian: string
+  id: string
 }
 
 export interface IProposePayload {

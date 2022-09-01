@@ -370,7 +370,7 @@ describe('create Propose object using fromRemark static method', () => {
 
     db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
       block: 11000000,
-      custodian: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+      id: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       voteFee: '1000',
       proposalFee: '1000000',
       recertifyFee: '2000000',
@@ -451,7 +451,7 @@ describe('create Propose object using fromRemark static method', () => {
 
     db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
       block: 11000000,
-      custodian: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+      id: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       voteFee: '1000',
       proposalFee: '1000000',
       recertifyFee: '2000000',
@@ -589,7 +589,7 @@ describe('create Propose object using fromRemark static method', () => {
 
     db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
       block: 11000000,
-      custodian: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+      id: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       voteFee: '1000',
       proposalFee: '1000000',
       recertifyFee: '2000000',
@@ -649,7 +649,7 @@ describe('create Propose object using fromRemark static method', () => {
 
     db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
       block: 11000000,
-      custodian: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+      id: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       voteFee: '1000',
       proposalFee: '1000000',
       recertifyFee: '2000000',
@@ -714,7 +714,7 @@ describe('create Propose object using fromRemark static method', () => {
 
     db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
       block: 11000000,
-      custodian: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+      id: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       voteFee: '1000',
       proposalFee: '1000000',
       recertifyFee: '2000000',
@@ -781,7 +781,7 @@ describe('create Propose object using fromRemark static method', () => {
 
     db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
       block: 11000000,
-      custodian: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+      id: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       voteFee: '1000',
       proposalFee: '1000000',
       recertifyFee: '2000000',
@@ -850,7 +850,7 @@ describe('create Propose object using fromRemark static method', () => {
 
     db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
       block: 11000000,
-      custodian: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+      id: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       voteFee: '1000',
       proposalFee: '1000000',
       recertifyFee: '2000000',
@@ -916,7 +916,7 @@ describe('create Propose object using fromRemark static method', () => {
 
     db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
       block: 11000000,
-      custodian: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+      id: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       voteFee: '1000',
       proposalFee: '1000000',
       recertifyFee: '2000000',
@@ -983,7 +983,7 @@ describe('create Propose object using fromRemark static method', () => {
 
     db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
       block: 11000000,
-      custodian: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+      id: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       voteFee: '1000',
       proposalFee: '1000000',
       recertifyFee: '2000000',

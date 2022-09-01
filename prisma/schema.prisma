@@ -98,9 +98,8 @@ model ConsolidationLock {
   @@map("consolidation_lock")
 }
 
-// TODO: Implement history triggers
 model Custodian {
-  custodian    String @id
+  id           String @id
   block        Int
   proposalFee  String // u128
   voteFee      String // u128
@@ -128,8 +127,16 @@ model Proposal {
   electorate       Boolean
 
   @@index([block])
+  @@index([custodian])
+  @@index([startDate])
+  @@index([snapshot])
+  @@index([endDate])
   @@map("proposal")
 }
+
+// TODO: Implement history triggers
+// model Vote, Result
+// TODO: tables tracked in the History2 table must have an id column as primary 
 
 model BlockTime {
   block            Int   @id // TODO: Consider using datatype that can hold more numbers

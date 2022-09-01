@@ -13,12 +13,12 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
   blockTimes: Record<number, number> = {}
 
   async upsertCustodian(register: Register): Promise<Custodian> {
-    const existingCustodian = this.custodians[register.custodian]
+    const existingCustodian = this.custodians[register.id]
 
     if (!existingCustodian) {
-      this.custodians[register.custodian] = {
+      this.custodians[register.id] = {
         block: register.block,
-        custodian: register.custodian,
+        id: register.id,
         voteFee: register.voteFee,
         proposalFee: register.proposalFee,
         recertifyFee: register.recertifyFee,
@@ -29,9 +29,9 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
       // Update existing CUSTODIAN entity (@see https://github.com/adamsteeber/rmrkdao-spec/issues/10)
       let changes = existingCustodian.changes as Prisma.JsonArray
       changes.push({ ...existingCustodian, changes: undefined }) // TODO: Consider more optimal changes schema
-      this.custodians[register.custodian] = {
+      this.custodians[register.id] = {
         block: register.block,
-        custodian: register.custodian,
+        id: register.id,
         voteFee: register.voteFee,
         proposalFee: register.proposalFee,
         recertifyFee: register.recertifyFee,
@@ -40,7 +40,7 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
       }
     }
 
-    return this.custodians[register.custodian]
+    return this.custodians[register.id]
   }
 
   async doesProposalExist(proposalId: string): Promise<boolean> {

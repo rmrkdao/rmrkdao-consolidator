@@ -16,7 +16,7 @@ describe('Process RMRKDAO remarks from block data', () => {
     )
     const db = new MemoryDatabaseAdapter()
     db.custodians['J1DxVnsH7Pb2bvvUo771EFv9eAwyjoAasFvLvDyBQCg2XjZ'] = {
-      custodian: 'J1DxVnsH7Pb2bvvUo771EFv9eAwyjoAasFvLvDyBQCg2XjZ',
+      id: 'J1DxVnsH7Pb2bvvUo771EFv9eAwyjoAasFvLvDyBQCg2XjZ',
       voteFee: '0',
       proposalFee: '0',
       recertifyFee: '0',
@@ -42,7 +42,7 @@ Object {
   "electorate": false,
   "endDate": 1661983083000,
   "id": "p4P54CxI6J",
-  "name": "Should we start a space flight business?",
+  "name": "Should we start a space flight busines?",
   "nftWeight": true,
   "options": Array [
     "yes",
@@ -76,7 +76,7 @@ Object {
 Object {
   "block": 14255141,
   "changes": Array [],
-  "custodian": "DaoQkNgxobgpKfd9NmETnWe6FCfDERduSTR2YiFDRGKvL17",
+  "id": "DaoQkNgxobgpKfd9NmETnWe6FCfDERduSTR2YiFDRGKvL17",
   "maxOptions": 100,
   "proposalFee": 110000000000n,
   "recertifyFee": 1000000000000n,

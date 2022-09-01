@@ -14,14 +14,14 @@ export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
   // Find possible CUSTODIAN entity with matching caller's address
   async upsertCustodian(registerInteraction: Register): Promise<Custodian> {
     const existingCustodian = await prisma.custodian.findUnique({
-      where: { custodian: registerInteraction.custodian },
+      where: { id: registerInteraction.id },
     })
 
     if (!existingCustodian) {
       return await prisma.custodian.create({
         data: {
           block: registerInteraction.block,
-          custodian: registerInteraction.custodian,
+          id: registerInteraction.id,
           voteFee: registerInteraction.voteFee,
           proposalFee: registerInteraction.proposalFee,
           recertifyFee: registerInteraction.recertifyFee,
@@ -34,10 +34,10 @@ export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
       let changes = existingCustodian.changes as Prisma.JsonArray
       changes.push({ ...existingCustodian, changes: undefined }) // TODO: Consider more optimal changes schema
       return await prisma.custodian.update({
-        where: { custodian: registerInteraction.custodian },
+        where: { id: registerInteraction.id },
         data: {
           block: registerInteraction.block,
-          custodian: registerInteraction.custodian,
+          id: registerInteraction.id,
           voteFee: registerInteraction.voteFee,
           proposalFee: registerInteraction.proposalFee,
           recertifyFee: registerInteraction.recertifyFee,
@@ -54,7 +54,7 @@ export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
 
   async getCustodian(custodianId: string) {
     const custodian = await prisma.custodian.findUnique({
-      where: { custodian: custodianId },
+      where: { id: custodianId },
     })
     return custodian
   }

@@ -1,6 +1,5 @@
 import { prisma } from '../db'
 import {
-  randAlpha,
   randAlphaNumeric,
   randBoolean,
   randCatchPhrase,
@@ -18,7 +17,7 @@ async function main() {
   const custodianData = Array(20)
     .fill('')
     .map(() => ({
-      custodian: randAlphaNumeric({ length: 47 }).join(''),
+      id: randAlphaNumeric({ length: 47 }).join(''),
       block: randNumber({ min: 8000000, max: 15000000 }),
       proposalFee: randNumber({ min: 100, max: 10000000 }).toString(),
       voteFee: randNumber({ min: 100, max: 10000000 }).toString(),
@@ -38,7 +37,7 @@ async function main() {
         .map(() => ({
           id: randAlphaNumeric({ length: 10 }).join(''),
           block: randNumber({ min: 8000000, max: 15000000 }),
-          custodian: custodian.custodian,
+          custodian: custodian.id,
           name: randCatchPhrase(),
           description: randParagraph(),
           collections: Array(randNumber({ min: 1, max: 4 }))

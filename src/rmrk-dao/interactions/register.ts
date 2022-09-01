@@ -8,15 +8,15 @@ import { IRmrkDaoDatabaseAdapter } from '../database-adapter'
 
 export class Register implements ICustodian {
   block: number
-  custodian: string // TODO: consider renaming
+  id: string
   proposalFee: string
   voteFee: string
   recertifyFee: string
   maxOptions: number
 
-  constructor(block: number, custodian: string, payload: IRegisterPayload) {
+  constructor(block: number, id: string, payload: IRegisterPayload) {
     this.block = block
-    this.custodian = custodian
+    this.id = id
     this.proposalFee = payload.proposalFee
     this.voteFee = payload.voteFee
     this.recertifyFee = payload.recertifyFee

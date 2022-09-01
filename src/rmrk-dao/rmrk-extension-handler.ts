@@ -58,9 +58,7 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
     await registerInteraction.save(this.db)
 
     // Log success
-    console.log(
-      `Processed REGISTER for CUSTODIAN ${registerInteraction.custodian}`
-    )
+    console.log(`Processed REGISTER for CUSTODIAN ${registerInteraction.id}`)
   }
 
   private async propose(remark: Remark): Promise<any> {
