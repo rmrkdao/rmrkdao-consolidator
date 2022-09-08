@@ -125,14 +125,14 @@ model Proposal {
   endDate          Float   @map("end_date")
   nftWeight        Boolean @map("nft_weight")
   electorate       Boolean
-  // owner            String
+  owner            String
 
   @@index([block])
   @@index([custodian])
   @@index([startDate])
   @@index([snapshot])
   @@index([endDate])
-  // @@index([owner])
+  @@index([owner])
   @@map("proposal")
 }
 

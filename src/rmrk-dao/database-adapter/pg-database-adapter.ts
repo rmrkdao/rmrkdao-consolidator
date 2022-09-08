@@ -85,6 +85,7 @@ export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
         endDate: propose.endDate,
         nftWeight: propose.nftWeight,
         electorate: propose.electorate,
+        owner: propose.owner,
       },
     })
 

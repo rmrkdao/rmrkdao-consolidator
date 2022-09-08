@@ -49,6 +49,7 @@ Object {
     "no",
     "maybe next summer",
   ],
+  "owner": "CaKWz5omakTK7ovp4m3koXrHyHb7NG3Nt7GENHbviByZpKp",
   "passingThreshold": undefined,
   "snapshot": 1661983083000,
   "startDate": 1661983083000,

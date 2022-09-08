@@ -30,9 +30,11 @@ export class Propose implements IProposal {
   endDate: number
   nftWeight: boolean
   electorate: boolean
+  owner: string
 
-  constructor(block: number, payload: IValidatedProposePayload) {
+  constructor(block: number, owner: string, payload: IValidatedProposePayload) {
     this.block = block
+    this.owner = owner
     this.id = payload.id
     this.custodian = payload.custodian
     this.name = payload.name
@@ -134,7 +136,7 @@ export class Propose implements IProposal {
 
     if (isIValidatedPayload(data)) {
       // TODO: Consider removing isIValidatedPayload method and instead type cast
-      return new Propose(remark.block, data)
+      return new Propose(remark.block, remark.caller, data)
     } else {
       throw new Error('Data is not validated payload')
     }

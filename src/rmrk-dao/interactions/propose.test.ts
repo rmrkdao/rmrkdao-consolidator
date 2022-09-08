@@ -468,6 +468,7 @@ describe('create Propose object using fromRemark static method', () => {
       passingThreshold: 10,
       snapshot: 1662155903,
       startDate: 1662069503,
+      owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
     }
 
     const db = new MemoryDatabaseAdapter()
@@ -551,6 +552,7 @@ describe('create Propose object using fromRemark static method', () => {
       passingThreshold: 10,
       snapshot: 1662155903,
       startDate: 1662069503,
+      owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
     }
 
     const db = new MemoryDatabaseAdapter()

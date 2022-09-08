@@ -82,6 +82,7 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
       endDate: propose.endDate,
       nftWeight: propose.nftWeight,
       electorate: propose.electorate,
+      owner: propose.owner,
     }
     this.proposals[propose.id] = proposal
     return proposal

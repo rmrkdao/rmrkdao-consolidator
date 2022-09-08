@@ -34,6 +34,7 @@ test('Valid VOTE', async () => {
     passingThreshold: 10,
     snapshot: 1662155903,
     startDate: 1662069503,
+    owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
   }
   const db = new MemoryDatabaseAdapter()
   db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
@@ -119,6 +120,7 @@ test('Missing valid balance transfer', () => {
     passingThreshold: 10,
     snapshot: 1662155903,
     startDate: 1662069503,
+    owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
   }
   const db = new MemoryDatabaseAdapter()
   db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
@@ -168,6 +170,7 @@ test("Cannot vote on or after PROPOSAL's endDate", () => {
     passingThreshold: 10,
     snapshot: 1662155903,
     startDate: 1662069503,
+    owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
   }
   const db = new MemoryDatabaseAdapter()
   db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
@@ -218,6 +221,7 @@ test('Invalid option', () => {
     passingThreshold: 10,
     snapshot: 1662155903,
     startDate: 1662069503,
+    owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
   }
   const db = new MemoryDatabaseAdapter()
   db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
