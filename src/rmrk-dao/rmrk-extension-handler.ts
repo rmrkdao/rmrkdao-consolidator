@@ -6,6 +6,7 @@ import { IRmrkDaoDatabaseAdapter } from './database-adapter'
 import { Propose } from './interactions/propose'
 import { Register } from './interactions/register'
 import { prisma } from '../db'
+import { VoteInteraction } from './interactions/vote'
 
 export class RmrkExtensionHandler implements IRmrkExtensionHandler {
   prefix: string = RMRK_DAO_PREFIX
@@ -79,8 +80,20 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
   }
 
   private async vote(remark: Remark): Promise<any> {
-    console.log('VOTE is not implemented')
-    return false
+    let voteInteraction: VoteInteraction | undefined
+    try {
+      voteInteraction = await VoteInteraction.fromRemark(remark, this.db)
+    } catch (e) {
+      // TODO: Save error to database
+      console.log('Invalid VOTE', (e as Error).message)
+      return
+    }
+
+    // Stop execution if error saving to database (don't catch error)
+    await voteInteraction.save(this.db)
+
+    // Log success
+    console.log(`Processed VOTE ${voteInteraction.id}`)
   }
 
   private async deregister(remark: Remark): Promise<any> {

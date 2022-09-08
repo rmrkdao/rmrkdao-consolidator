@@ -119,23 +119,48 @@ model Proposal {
   description      String
   collections      Json // string[]
   options          Json // string[]
-  passingThreshold Float?
-  startDate        Float
+  passingThreshold Float?  @map("passing_threshold")
+  startDate        Float   @map("start_date")
   snapshot         Float
-  endDate          Float
-  nftWeight        Boolean
+  endDate          Float   @map("end_date")
+  nftWeight        Boolean @map("nft_weight")
   electorate       Boolean
+  // owner            String
 
   @@index([block])
   @@index([custodian])
   @@index([startDate])
   @@index([snapshot])
   @@index([endDate])
+  // @@index([owner])
   @@map("proposal")
 }
 
+model Vote {
+  id         String     @id
+  block      Int
+  caller     String
+  proposalId String     @map("proposal_id")
+  option     String
+  status     VoteStatus @default(pending)
+  changes    Json       @default("[]")
+
+  @@index([block])
+  @@index([caller])
+  @@index([proposalId])
+  @@map("vote")
+}
+
+enum VoteStatus {
+  pending
+  counted
+  invalid
+
+  @@map("vote_status")
+}
+
 // TODO: Implement history triggers
-// model Vote, Result
+// model Result
 // TODO: tables tracked in the History2 table must have an id column as primary 
 
 model BlockTime {

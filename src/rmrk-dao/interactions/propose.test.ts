@@ -50,6 +50,29 @@ Object {
 `)
   })
 
+  test('Fails when startDate is null', () => {
+    const payload = encodeURIComponent(
+      JSON.stringify({
+        id: '1000000000',
+        custodian: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
+        name: 'First',
+        description: 'First proposal',
+        collections: ['1', '2'],
+        options: ['yes', 'no'],
+        snapshot: now + 24 * 3600, // 24 hours
+        passingThreshold: 10,
+        startDate: null,
+        endDate: now + 48 * 3600, // two days from now
+        nftWeight: true,
+        electorate: true,
+      })
+    )
+
+    expect(() => {
+      Propose.parseData(payload)
+    }).toThrowError(`"startDate" must be a number`)
+  })
+
   describe('Correctly parse id', () => {
     test('missing id', () => {
       const payload = encodeURIComponent(

@@ -1,11 +1,12 @@
-import { Collection2, Custodian, Prisma, Proposal } from '@prisma/client'
+import { Collection2, Custodian, Prisma, Proposal, Vote } from '@prisma/client'
 import { getApiWithReconnect } from 'rmrk-tools'
 import { KUSAMA_NODE_WS } from '../../app-constants'
 import { prisma } from '../../db'
 import { getAndSaveBlockTime } from '../../services/block-time'
 import { Propose } from '../interactions/propose'
 import { Register } from '../interactions/register'
-import { IRmrkDaoDatabaseAdapter } from './types'
+import { VoteInteraction } from '../interactions/vote'
+import { IRmrkDaoDatabaseAdapter, VoteChange } from './types'
 
 /**
  * Postgres database adapter.
@@ -88,6 +89,59 @@ export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
     })
 
     return result
+  }
+
+  async getProposal(proposalId: string): Promise<Proposal | null> {
+    return await prisma.proposal.findUnique({ where: { id: proposalId } })
+  }
+
+  async upsertVote(voteInteraction: VoteInteraction): Promise<Vote | null> {
+    const previousVote = await prisma.vote.findUnique({
+      where: { id: voteInteraction.id },
+    })
+    if (previousVote) {
+      return await this.updateVote(previousVote, voteInteraction)
+    } else {
+      return await this.createVote(voteInteraction)
+    }
+  }
+
+  async createVote(voteInteraction: VoteInteraction): Promise<Vote | null> {
+    return await prisma.vote.create({
+      data: {
+        id: voteInteraction.id,
+        block: voteInteraction.block,
+        caller: voteInteraction.caller,
+        proposalId: voteInteraction.proposalId,
+        option: voteInteraction.option,
+      },
+    })
+  }
+
+  async updateVote(
+    previousVote: Vote,
+    voteInteraction: VoteInteraction
+  ): Promise<Vote | null> {
+    const changes: VoteChange[] = [
+      // @ts-ignore
+      ...(previousVote.changes as VoteChange[]),
+      {
+        block: previousVote.block,
+        option: previousVote.option,
+      },
+    ]
+
+    return await prisma.vote.update({
+      where: { id: previousVote.id },
+      data: {
+        block: voteInteraction.block,
+        caller: voteInteraction.caller,
+        proposalId: voteInteraction.proposalId,
+        option: voteInteraction.option,
+        // @ts-ignore
+        changes,
+      },
+    })
   }
 
   /**
