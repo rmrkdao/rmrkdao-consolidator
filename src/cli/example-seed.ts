@@ -61,6 +61,7 @@ async function main() {
           }),
           nftWeight: randBoolean(),
           electorate: randBoolean(),
+          owner: randAlphaNumeric({ length: 47 }).join(''),
         }))
     })
     .flat()
