@@ -2,6 +2,7 @@ import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 import { kusamaEncodeAddress, validateRemarkDaoBase } from '../../utils'
 import { INTERACTION_TYPES } from '../../app-constants'
 import { IRmrkDaoDatabaseAdapter } from '../database-adapter'
+import { ProposalOptions } from '../../types'
 
 export class VoteInteraction {
   constructor(
@@ -36,7 +37,7 @@ export class VoteInteraction {
     }
 
     // Check that the option is available in the PROPOSAL
-    if (!(option in (proposal.options as string[]))) {
+    if (!(option in (proposal.options as ProposalOptions))) {
       // TODO: @see https://github.com/adamsteeber/rmrkdao-spec/issues/13
       throw new Error(
         `Option ${option} is not available in PROPOSAL ${proposalId}`

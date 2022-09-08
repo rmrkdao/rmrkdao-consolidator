@@ -10,13 +10,15 @@ export interface ICustodian extends IRegisterPayload {
   id: string
 }
 
+export type ProposalOptions = Record<string, string>
+
 export interface IProposePayload {
   id: string
   custodian: string
   name: string
   description: string
   collections: string[]
-  options: string[]
+  options: ProposalOptions
   snapshot: number | null
   passingThreshold: number | null
   startDate: number | null

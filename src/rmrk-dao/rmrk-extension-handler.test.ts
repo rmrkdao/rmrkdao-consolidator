@@ -44,11 +44,11 @@ Object {
   "id": "p4P54CxI6J",
   "name": "Should we start a space flight busines?",
   "nftWeight": true,
-  "options": Array [
-    "yes",
-    "no",
-    "maybe next summer",
-  ],
+  "options": Object {
+    "0": "yes",
+    "1": "no",
+    "2": "maybe next summer",
+  },
   "owner": "CaKWz5omakTK7ovp4m3koXrHyHb7NG3Nt7GENHbviByZpKp",
   "passingThreshold": undefined,
   "snapshot": 1661983083000,

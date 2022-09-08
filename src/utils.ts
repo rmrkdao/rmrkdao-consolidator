@@ -77,3 +77,44 @@ export const u128Validator: CustomValidator = (value, _helpers) => {
 export const kusamaAddressValidator: CustomValidator = (value, _helpers) => {
   return kusamaEncodeAddress(value)
 }
+
+/**
+ * Custom Joi validator that checks that the input value is an object of with numeric strings
+ * as keys and strings as values
+ * @param {any} value
+ * @param _helpers
+ */
+export const proposalOptionsValidator: CustomValidator = (value, _helpers) => {
+  // Make sure it is an object
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new Error('Value must be a object dictionary')
+  }
+
+  let count = 0
+  for (const key of Object.keys(value)) {
+    count++
+
+    // Make sure the keys are numeric strings no larger than max int
+    if (key.includes('.')) {
+      throw new Error('Keys must be integers')
+    }
+    const x = parseInt(key)
+    if (!Number.isInteger(x) || x < 0) {
+      throw new Error('Keys must be non-negative integers')
+    }
+
+    // Make sure the values are strings
+    const option = value[key]
+    if (typeof option !== 'string') {
+      throw new Error('Option values must be strings')
+    }
+    if (option.length > 10000) {
+      throw new Error('Options cannot have a text length larger than 10000')
+    }
+  }
+  if (count < 2) {
+    throw new Error('Must have at least 2 options')
+  }
+
+  return value
+}

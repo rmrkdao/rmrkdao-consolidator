@@ -4,6 +4,7 @@ import { getRemarkData } from 'rmrk-tools'
 import {
   kusamaAddressValidator,
   kusamaEncodeAddress,
+  proposalOptionsValidator,
   validateRemarkDaoBase,
 } from '../../utils'
 import { INTERACTION_TYPES } from '../../app-constants'
@@ -12,6 +13,7 @@ import {
   IProposePayload,
   isIValidatedPayload,
   IValidatedProposePayload,
+  ProposalOptions,
 } from '../../types'
 import { getIssuerAtBlock } from '../../rmrk2/utils'
 import { IRmrkDaoDatabaseAdapter } from '../database-adapter/'
@@ -23,7 +25,7 @@ export class Propose implements IProposal {
   name: string
   description: string
   collections: string[] // TODO: Should there be a max number of collections?
-  options: string[]
+  options: ProposalOptions
   passingThreshold: number | null
   startDate: number
   snapshot: number
@@ -75,9 +77,10 @@ export class Propose implements IProposal {
     }
 
     // Check that the custodian's max options rule is honored
-    if (data.options.length > custodian.maxOptions) {
+    const optionLength = Object.keys(data.options).length
+    if (optionLength > custodian.maxOptions) {
       throw new Error(
-        `CUSTODIAN only allows a max of ${custodian.maxOptions} but the PROPOSAL has ${data.options.length}`
+        `CUSTODIAN only allows a max of ${custodian.maxOptions} but the PROPOSAL has ${optionLength}`
       )
     }
 
@@ -171,10 +174,7 @@ export const proposePayloadSchema = Joi.object<IProposePayload>({
   name: Joi.string().max(10000).required(),
   description: Joi.string().max(10000).required().allow(''),
   collections: Joi.array().items(Joi.string().required()).required(),
-  options: Joi.array()
-    .items(Joi.string().max(10000).required())
-    .min(2)
-    .required(),
+  options: Joi.object().custom(proposalOptionsValidator).required(),
   passingThreshold: Joi.number().min(0).max(100).optional(),
   startDate: Joi.number().optional(),
   snapshot: Joi.number().optional(),

@@ -14,7 +14,7 @@ describe('parseData', () => {
         name: 'First',
         description: 'First proposal',
         collections: ['1', '2'],
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         snapshot: now + 24 * 3600, // 24 hours
         passingThreshold: 10,
         startDate: now,
@@ -39,10 +39,10 @@ Object {
   "id": "1000000000",
   "name": "First",
   "nftWeight": true,
-  "options": Array [
-    "yes",
-    "no",
-  ],
+  "options": Object {
+    "0": "yes",
+    "1": "no",
+  },
   "passingThreshold": 10,
   "snapshot": 1662155903,
   "startDate": 1662069503,
@@ -58,7 +58,7 @@ Object {
         name: 'First',
         description: 'First proposal',
         collections: ['1', '2'],
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         snapshot: now + 24 * 3600, // 24 hours
         passingThreshold: 10,
         startDate: null,
@@ -81,7 +81,7 @@ Object {
           name: 'First',
           description: 'First proposal',
           collections: ['1', '2'],
-          options: ['yes', 'no'],
+          options: { '0': 'yes', '1': 'no' },
           snapshot: now + 24 * 3600, // 24 hours
           passingThreshold: 10,
           startDate: now,
@@ -104,7 +104,7 @@ Object {
           name: 'First',
           description: 'First proposal',
           collections: ['1', '2'],
-          options: ['yes', 'no'],
+          options: { '0': 'yes', '1': 'no' },
           snapshot: now + 24 * 3600, // 24 hours
           passingThreshold: 10,
           startDate: now,
@@ -127,7 +127,7 @@ Object {
           name: 'First',
           description: 'First proposal',
           collections: ['1', '2'],
-          options: ['yes', 'no'],
+          options: { '0': 'yes', '1': 'no' },
           snapshot: now + 24 * 3600, // 24 hours
           passingThreshold: 10,
           startDate: now,
@@ -151,7 +151,7 @@ Object {
           name: 'First',
           description: 'First proposal',
           collections: ['1', '2'],
-          options: ['yes', 'no'],
+          options: { '0': 'yes', '1': 'no' },
           snapshot: now + 24 * 3600, // 24 hours
           passingThreshold: 10,
           startDate: now,
@@ -174,7 +174,7 @@ Object {
           name: 'First',
           description: 'First proposal',
           collections: ['1', '2'],
-          options: ['yes', 'no'],
+          options: { '0': 'yes', '1': 'no' },
           snapshot: now + 24 * 3600, // 24 hours
           passingThreshold: 10,
           startDate: now,
@@ -199,7 +199,7 @@ Object {
         custodian: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
         description: 'First proposal',
         collections: ['1', '2'],
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         snapshot: now + 24 * 3600, // 24 hours
         passingThreshold: 10,
         startDate: now,
@@ -222,7 +222,7 @@ Object {
         name: Array(10001).fill('a').join(''),
         description: 'First proposal',
         collections: ['1', '2'],
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         snapshot: now + 24 * 3600, // 24 hours
         passingThreshold: 10,
         startDate: now,
@@ -247,7 +247,7 @@ Object {
         name: 'first',
         description: '',
         collections: ['1', '2'],
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         snapshot: now + 24 * 3600, // 24 hours
         passingThreshold: 10,
         startDate: now,
@@ -269,7 +269,7 @@ Object {
         custodian: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
         name: 'first',
         collections: ['1', '2'],
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         snapshot: now + 24 * 3600, // 24 hours
         passingThreshold: 10,
         startDate: now,
@@ -292,7 +292,7 @@ Object {
         name: 'first',
         description: '',
         collections: ['1', '2'],
-        options: ['yes'],
+        options: { '0': 'yes' },
         snapshot: now + 24 * 3600, // 24 hours
         passingThreshold: 10,
         startDate: now,
@@ -304,7 +304,9 @@ Object {
 
     expect(() => {
       const result = Propose.parseData(payload)
-    }).toThrowError(`"options" must contain at least 2 items`)
+    }).toThrowError(
+      `"options" failed custom validation because Must have at least 2 options`
+    )
   })
 
   test('passing threshold should be <= 100', () => {
@@ -315,7 +317,7 @@ Object {
         name: 'first',
         description: '',
         collections: ['1', '2'],
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         snapshot: now + 24 * 3600, // 24 hours
         passingThreshold: 101,
         startDate: now,
@@ -338,7 +340,7 @@ Object {
         name: 'first',
         description: '',
         collections: ['1', '2'],
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         snapshot: now + 24 * 3600, // 24 hours
         passingThreshold: -1,
         startDate: now,
@@ -366,7 +368,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662069503,
@@ -431,7 +433,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662069503,
@@ -464,7 +466,7 @@ describe('create Propose object using fromRemark static method', () => {
       id: '1000000000',
       name: 'First',
       nftWeight: true,
-      options: ['yes', 'no'],
+      options: { '0': 'yes', '1': 'no' },
       passingThreshold: 10,
       snapshot: 1662155903,
       startDate: 1662069503,
@@ -515,7 +517,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662069503,
@@ -548,7 +550,7 @@ describe('create Propose object using fromRemark static method', () => {
       id: '1000000000',
       name: 'First',
       nftWeight: true,
-      options: ['yes', 'no'],
+      options: { '0': 'yes', '1': 'no' },
       passingThreshold: 10,
       snapshot: 1662155903,
       startDate: 1662069503,
@@ -587,7 +589,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no', '?'],
+        options: { '0': 'yes', '1': 'no', '2': '?' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662069503,
@@ -654,7 +656,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662069503,
@@ -712,7 +714,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662069503,
@@ -779,7 +781,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662069503,
@@ -848,7 +850,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662069503,
@@ -913,7 +915,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662242303,
@@ -980,7 +982,7 @@ describe('create Propose object using fromRemark static method', () => {
         id: '1000000000',
         name: 'First',
         nftWeight: true,
-        options: ['yes', 'no'],
+        options: { '0': 'yes', '1': 'no' },
         passingThreshold: 10,
         snapshot: 1662155903,
         startDate: 1662069503,
