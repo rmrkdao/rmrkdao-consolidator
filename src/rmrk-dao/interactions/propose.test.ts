@@ -354,6 +354,37 @@ Object {
       const result = Propose.parseData(payload)
     }).toThrowError(`"passingThreshold" must be greater than or equal to 0`)
   })
+
+  // @see https://github.com/adamsteeber/rmrkdao-spec/issues/13#issuecomment-1241381130
+  test('Duplicate keys are not supported', () => {
+    const payload = encodeURIComponent(
+      '{"id":"1000000000","custodian":"HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU","name":"First","description":"First proposal","collections":["1","2"],"options":{"0":"yes","0":"no","1":"maybe"},"snapshot":1662155903,"passingThreshold":10,"startDate":1662069503,"endDate":1662242303,"nftWeight":true,"electorate":true}'
+    )
+
+    const result = Propose.parseData(payload)
+    expect(result).toMatchInlineSnapshot(`
+Object {
+  "collections": Array [
+    "1",
+    "2",
+  ],
+  "custodian": "HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU",
+  "description": "First proposal",
+  "electorate": true,
+  "endDate": 1662242303,
+  "id": "1000000000",
+  "name": "First",
+  "nftWeight": true,
+  "options": Object {
+    "0": "no",
+    "1": "maybe",
+  },
+  "passingThreshold": 10,
+  "snapshot": 1662155903,
+  "startDate": 1662069503,
+}
+`)
+  })
 })
 
 describe('create Propose object using fromRemark static method', () => {
