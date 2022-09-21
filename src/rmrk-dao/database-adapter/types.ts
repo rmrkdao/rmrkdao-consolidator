@@ -57,10 +57,25 @@ export interface IRmrkDaoDatabaseAdapter {
   upsertVote(voteInteraction: VoteInteraction): Promise<Vote | null>
 
   /**
+   * Get all VOTEs for a PROPOSAL
+   * @param {string} proposalId
+   * @returns {Promise<Votes[]>}
+   */
+  getVotes(proposalId: string): Promise<Vote[]>
+
+  /**
    * Get the unix time in milliseconds of a block
    * @param {number} block
    */
   getBlockTime(block: number): Promise<number | null>
+
+  /**
+   * Get the latest block number at the time of the given unix millisecond.
+   * Must return the block immediately at or before the time.
+   * @param {number} unixMilliseconds
+   * @return {Promise<number | null>}
+   */
+  getLatestBlockAtTime(unixMilliseconds: number): Promise<number | null>
 }
 
 export interface VoteChange {

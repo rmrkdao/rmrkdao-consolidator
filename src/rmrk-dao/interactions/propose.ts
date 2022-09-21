@@ -137,6 +137,8 @@ export class Propose implements IProposal {
       throw new Error(`Start time cannot be before remark's block time`)
     }
 
+    // TODO: Check that: must be at least 1 minute after startDate and at most 365 days after startDate
+
     if (isIValidatedPayload(data)) {
       // TODO: Consider removing isIValidatedPayload method and instead type cast
       return new Propose(remark.block, remark.caller, data)

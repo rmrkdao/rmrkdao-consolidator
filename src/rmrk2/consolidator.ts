@@ -26,7 +26,6 @@ export const consolidate = async (data: any[], ss58Format: number) => {
     if (consolidationInfo.status === LatestConsolidatingRmrkStatus.processing) {
       // Restore to last processed remark by undoing the changes that are in the History2 table
       await restoreFromHistory()
-      console.warn('restored history')
     }
     // Filter out the processed remarks
     // Filters in place

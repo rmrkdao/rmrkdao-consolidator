@@ -1,4 +1,4 @@
-import { LatestConsolidatingRmrkStatus } from '@prisma/client'
+import { LatestConsolidatingRmrkStatus, ProposalStatus } from '@prisma/client'
 import { fetchRemarks } from 'rmrk-tools'
 import { prisma } from './db'
 import './patch'
@@ -81,7 +81,7 @@ const listenAndProcess = async () => {
       // info.latestBlock should be the next block that needs to be processed
       for (let x = info.latestBlock; x <= blockNumber; x++) {
         // Save block unix timestamp
-        await getAndSaveBlockTime(api, x)
+        const blockUnixMilliseconds = await getAndSaveBlockTime(api, x)
 
         console.log(`Fetching block ${x} (latest: ${blockNumber})`)
 
@@ -96,6 +96,13 @@ const listenAndProcess = async () => {
         if (extracted.length) {
           await consolidate(extracted, KUSAMA_SS58_FORMAT)
         }
+
+        // Set PROPOSALs' status to "ready_to_count" when the current block time is past the PROPOSAL endDate.
+        // This will be useful for the process responsible for counting votes for expired PROPOSALs.
+        await prisma.proposal.updateMany({
+          where: { endDate: { lt: blockUnixMilliseconds } },
+          data: { status: { set: ProposalStatus.ready_to_count } },
+        })
       }
 
       // Update consolidation info for what should be the next block to be processed

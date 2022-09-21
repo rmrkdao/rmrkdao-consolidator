@@ -4,13 +4,13 @@ import {
   LatestConsolidatingRmrkStatus,
   Prisma,
 } from '@prisma/client'
-import { getRemarksFromBlocks } from 'rmrk-tools'
-import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 import fs from 'fs'
+import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 // @ts-ignore
 import JSONStream from 'JSONStream'
 import _ from 'lodash'
 import { Change } from 'rmrk-tools/dist/changelog'
+import { NFTConsolidated } from 'rmrk-tools/dist/tools/consolidator/consolidator'
 import { LISTENING_PREFIX_LIST } from '../app-constants'
 import { prisma } from '../db'
 import '../patch'
@@ -89,6 +89,7 @@ export function filterByUnProcessedRemarks(
   }
 }
 
+// TODO: Consider creating a single transaction for all of these changes and truncating the history2 table
 export const restoreFromHistory = async () => {
   // Get array of changes from history table in descending time order
   const changes = await prisma.history2.findMany({
@@ -152,6 +153,8 @@ export const restoreFromHistory = async () => {
         `Unable to undo ${change.operation} where history2.id = ${change.id}`
       )
     }
+
+    console.log('restored history')
   }
 
   await prisma.history2.deleteMany()
@@ -222,4 +225,97 @@ export const getIssuerAtBlock = (
   throw new Error(
     `Not able to determine collection ${collection.id} issuer at block ${block}`
   )
+}
+
+/**
+ * Get the root owner of an NFT at a given block number
+ * @todo test
+ * @param {NFTConsolidated} nft
+ * @param {number} block
+ * @returns {string | null}
+ */
+export const getNftRootOwnerAtBlock = (
+  nft: NFTConsolidated,
+  block: number
+): string | null => {
+  // Check that the nft was created before the VOTE
+  if (nft.block > block) {
+    return null
+  }
+
+  const sortedChanges = (nft.changes as Change[]).sort(
+    (a, b) => a.block - b.block
+  )
+  const nftChanges = sortedChanges.filter(
+    (change) => ['owner', 'rootowner'].includes(change.field) // TODO: Check this, might need to bring in owner and check for if it is a Kusama address or NFT id
+  )
+
+  // If no changes, then the current issuer of the nft is considered the owner of the nft at the specified block
+  if (!nftChanges?.length) {
+    return nft.rootowner
+  }
+
+  // Find the changes that have ocurred before or at the block
+  const rootOwnerChangesUpUntilBlockInclusive = nftChanges.filter(
+    (change) => change.block <= block
+  )
+
+  // If there are changes at or before the block, then the last change's new value in that group contains the rootowner
+  if (rootOwnerChangesUpUntilBlockInclusive.length > 0) {
+    return rootOwnerChangesUpUntilBlockInclusive.at(-1)?.new
+  }
+
+  // Find the changes that have ocurred after the block
+  const rootownerChangesAfterBlock = nftChanges.filter(
+    (change) => change.block > block
+  )
+
+  // If there are changes after the block, then the first change's old value in that group contains the rootowner
+  if (rootownerChangesAfterBlock.length > 0) {
+    return rootownerChangesAfterBlock[0].old
+  }
+
+  throw new Error(
+    `Not able to determine nft ${nft.id} rootowner at block ${block}`
+  )
+}
+
+/**
+ * Check if an NFT is burned at the block number in question
+ * @todo Test
+ * @param {NFTConsolidated} nft
+ * @param {number} block
+ * @returns {boolean}
+ */
+export const isNftBurnedAtBlock = (
+  nft: NFTConsolidated,
+  block: number
+): boolean => {
+  if (nft.block > block) {
+    return false
+  }
+
+  // If the nft is currently not burned then it wasn't burned in the past
+  if (!nft.burned) {
+    return false
+  }
+
+  const sortedChanges = (nft.changes as Change[]).sort(
+    (a, b) => a.block - b.block
+  )
+  const burnedChanges = sortedChanges.filter(
+    (change) => change.field === 'burned'
+  )
+
+  // Find the changes that have ocurred before or at the block
+  const burnedChangesUpUntilBlockInclusive = burnedChanges.filter(
+    (change) => change.block <= block
+  )
+
+  // If there are changes at or before the block, then the NFT was burned at the block in question
+  if (burnedChangesUpUntilBlockInclusive.length > 0) {
+    return true
+  }
+
+  return false
 }

@@ -5,6 +5,7 @@ import {
   Prisma,
   Vote,
   VoteStatus,
+  ProposalStatus,
 } from '@prisma/client'
 import { Propose } from '../interactions/propose'
 import { Register } from '../interactions/register'
@@ -83,6 +84,7 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
       nftWeight: propose.nftWeight,
       electorate: propose.electorate,
       owner: propose.owner,
+      status: ProposalStatus.waiting,
     }
     this.proposals[propose.id] = proposal
     return proposal
@@ -140,7 +142,27 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
     return vote
   }
 
+  async getVotes(proposalId: string): Promise<Vote[]> {
+    return Object.values(this.votes).filter(
+      (vote) => vote.proposalId === proposalId
+    )
+  }
+
   async getBlockTime(block: number): Promise<number | null> {
     return this.blockTimes[block] || null
+  }
+
+  async getLatestBlockAtTime(unixMilliseconds: number): Promise<number | null> {
+    const result = Object.keys(this.blockTimes)
+      .map((key) => ({
+        unixMilliseconds: this.blockTimes[Number(key)],
+        block: Number(key),
+      }))
+      .filter((x) => x.unixMilliseconds <= unixMilliseconds)
+      .sort((a, b) => {
+        return a.block - b.block
+      })[0]
+
+    return result?.block ?? null
   }
 }

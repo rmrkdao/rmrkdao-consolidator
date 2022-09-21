@@ -145,6 +145,10 @@ export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
     })
   }
 
+  async getVotes(proposalId: string): Promise<Vote[]> {
+    return await prisma.vote.findMany({ where: { proposalId } })
+  }
+
   /**
    * Get the unix time in milliseconds of a block via database first then blockchain if not in database
    * @param {number} block
@@ -166,5 +170,15 @@ export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
         return null
       }
     }
+  }
+
+  async getLatestBlockAtTime(unixMilliseconds: number): Promise<number | null> {
+    // Assumes that the blockTime table is up-to-date
+    const result = await prisma.blockTime.findFirst({
+      where: { unixMilliseconds: { lte: unixMilliseconds } },
+      orderBy: { block: 'desc' },
+    })
+
+    return result?.block ?? null
   }
 }

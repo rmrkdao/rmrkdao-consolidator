@@ -112,20 +112,21 @@ model Custodian {
 }
 
 model Proposal {
-  id               String  @id
+  id               String         @id
   block            Int
   custodian        String
   name             String
   description      String
   collections      Json // string[]
   options          Json // string[]
-  passingThreshold Float?  @map("passing_threshold")
-  startDate        Float   @map("start_date")
+  passingThreshold Float?         @map("passing_threshold")
+  startDate        Float          @map("start_date")
   snapshot         Float
-  endDate          Float   @map("end_date")
-  nftWeight        Boolean @map("nft_weight")
+  endDate          Float          @map("end_date")
+  nftWeight        Boolean        @map("nft_weight")
   electorate       Boolean
   owner            String
+  status           ProposalStatus @default(waiting)
 
   @@index([block])
   @@index([custodian])
@@ -133,6 +134,7 @@ model Proposal {
   @@index([snapshot])
   @@index([endDate])
   @@index([owner])
+  @@index([status])
   @@map("proposal")
 }
 
@@ -149,6 +151,14 @@ model Vote {
   @@index([caller])
   @@index([proposalId])
   @@map("vote")
+}
+
+model Result {
+  id           String  @id
+  // Has the result been processed by the consolidator
+  consolidated Boolean
+
+  @@map("result")
 }
 
 enum VoteStatus {
@@ -176,4 +186,12 @@ enum LatestConsolidatingRmrkStatus {
   complete
 
   @@map("latest_consolidating_rmrk_status")
+}
+
+enum ProposalStatus {
+  waiting
+  ready_to_count
+  counted
+
+  @@map("proposal_status")
 }
