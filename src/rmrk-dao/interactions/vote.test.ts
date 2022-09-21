@@ -1,4 +1,4 @@
-import { Proposal } from '@prisma/client'
+import { Proposal, ProposalStatus } from '@prisma/client'
 import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 import { MemoryDatabaseAdapter } from '../database-adapter/memory-database-adapter'
 import { VoteInteraction } from './vote'
@@ -35,6 +35,7 @@ test('Valid VOTE', async () => {
     snapshot: 1662155903,
     startDate: 1662069503,
     owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+    status: ProposalStatus.waiting,
   }
   const db = new MemoryDatabaseAdapter()
   db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
@@ -121,6 +122,7 @@ test('Missing valid balance transfer', () => {
     snapshot: 1662155903,
     startDate: 1662069503,
     owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+    status: ProposalStatus.waiting,
   }
   const db = new MemoryDatabaseAdapter()
   db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
@@ -171,6 +173,7 @@ test("Cannot vote on or after PROPOSAL's endDate", () => {
     snapshot: 1662155903,
     startDate: 1662069503,
     owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+    status: ProposalStatus.waiting,
   }
   const db = new MemoryDatabaseAdapter()
   db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {
@@ -222,6 +225,7 @@ test('Invalid option', () => {
     snapshot: 1662155903,
     startDate: 1662069503,
     owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
+    status: ProposalStatus.waiting,
   }
   const db = new MemoryDatabaseAdapter()
   db.custodians['HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh'] = {

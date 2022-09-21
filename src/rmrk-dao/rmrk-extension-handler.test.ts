@@ -53,6 +53,7 @@ Object {
   "passingThreshold": undefined,
   "snapshot": 1661983083000,
   "startDate": 1661983083000,
+  "status": "waiting",
 }
 `)
   })
