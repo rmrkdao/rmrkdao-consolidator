@@ -20,7 +20,7 @@ export class VoteInspector {
 
   constructor(
     /** VOTEs to be checked */
-    private unverifiedVotes: Vote[],
+    private partiallyVerifiedVotes: Vote[],
     /** Block at which time specific tests should be checked against */
     private snapshotBlock: number
   ) {}
@@ -51,7 +51,7 @@ export class VoteInspector {
         continue
       }
 
-      for (const vote of this.unverifiedVotes) {
+      for (const vote of this.partiallyVerifiedVotes) {
         if (rootOwner === vote.caller) {
           this.addQualifiedNftForVote(nft, vote)
         }
@@ -84,7 +84,7 @@ export class VoteInspector {
       counts.push({
         voteId: value.vote.id,
         option: value.vote.option,
-        weight: value.nfts.size,
+        nftCount: value.nfts.size,
       })
     })
 

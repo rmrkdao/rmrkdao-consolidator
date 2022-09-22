@@ -19,7 +19,7 @@ export type VotesWithNfts = Map<
 >
 
 export interface IResult {
-  id: string
+  proposalId: string
   count: Record<string, number>
   winningOptions: string[]
   electorate: boolean
@@ -30,5 +30,5 @@ export interface IResult {
 export interface VoteSummary {
   voteId: string
   option: string
-  weight: number
+  nftCount: number
 }

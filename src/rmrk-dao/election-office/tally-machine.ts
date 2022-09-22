@@ -8,23 +8,30 @@ import { VoteInspector } from './vote-inspector'
  * Tallies the votes and creates a IResult object
  */
 export class TallyMachine {
+  /**
+   * Expects partiallyVerifiedVotes VOTEs to already:
+   * - be unique to a PROPOSAL and voter's address
+   * - VOTE fee correctly paid
+   * - meet the basic time requirements (VOTE's block in-between PROPOSAL startDate and endDate)
+   * - (check the interactions/vote/VoteInteraction.fromRemark method for most up-to-date requirements)
+   * @param proposal
+   * @param partiallyVerifiedVotes
+   * @param snapshotBlock
+   * @param rmrkDb
+   */
   constructor(
     private proposal: Proposal,
-    private unverifiedVotes: Vote[],
+    private partiallyVerifiedVotes: Vote[],
     private snapshotBlock: number,
     private rmrkDb: IConsolidatorAdapter
   ) {}
 
   /**
    * Inspects all VOTEs in a PROPOSAL, tallies them up, and creates a RESULT
-   * @param {string} custodianKusamaAddress
    * @param {boolean} recertify
    * @returns {Promise<IResult>}
    */
-  public async prepareResult(
-    custodianKusamaAddress: string,
-    recertify: boolean
-  ): Promise<IResult> {
+  public async prepareResult(recertify: boolean): Promise<IResult> {
     const inspector = await this.tallyVotes()
 
     // If the proposal is electorate, pass total number of possible addresses if per-wallet proposal or total number of possible unburned NFTs
@@ -35,7 +42,6 @@ export class TallyMachine {
       : undefined
 
     return new ResultBuilder(this.proposal, recertify)
-      .createId(custodianKusamaAddress)
       .countValidatedVotes(inspector.getVoteSummaries())
       .calcThresholdDenominator(maxTurnout)
       .build()
@@ -47,7 +53,7 @@ export class TallyMachine {
    */
   private async tallyVotes(): Promise<VoteInspector> {
     const inspector = new VoteInspector(
-      this.unverifiedVotes,
+      this.partiallyVerifiedVotes,
       this.snapshotBlock
     )
 

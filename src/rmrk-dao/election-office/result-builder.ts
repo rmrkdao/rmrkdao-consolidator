@@ -8,24 +8,10 @@ export class ResultBuilder {
   /** Map of option counts */
   private allCounts: Map<string, number> = new Map()
 
-  /** Id of the RESULT */
-  private id?: string
-
-  /** The total could potentially be 0 if no one voted */
+  /** The total could potentially be 0 if no VOTEs are valid */
   private thresholdDenominator?: number
 
   constructor(private proposal: Proposal, private recertify: boolean) {}
-
-  /**
-   * Creates an id
-   * @todo Decide on id format
-   * @param custodianKusamaAddress
-   * @returns
-   */
-  public createId(custodianKusamaAddress: string) {
-    this.id = `${this.proposal.id}-${custodianKusamaAddress}-${Date.now()}`
-    return this
-  }
 
   /**
    * Count validated votes
@@ -55,9 +41,9 @@ export class ResultBuilder {
    */
   public calcThresholdDenominator(maxTurnout?: number) {
     if (this.proposal.electorate) {
-      if (!maxTurnout || maxTurnout < 0) {
+      if (maxTurnout === undefined || maxTurnout < 0) {
         throw new Error(
-          'maxTurnout must be set to positive number if electorate is true'
+          'maxTurnout must be set to non-negative number if electorate is true'
         )
       }
       this.thresholdDenominator = maxTurnout
@@ -79,15 +65,12 @@ export class ResultBuilder {
    * @returns {IResult}
    */
   public build(): IResult {
-    if (!this.id) {
-      throw new Error('Need to create id first')
-    }
-    if (!this.thresholdDenominator) {
+    if (this.thresholdDenominator === undefined) {
       throw new Error('Need to calculate threshold denominator first')
     }
 
     return {
-      id: this.id,
+      proposalId: this.proposal.id,
       count: this.getOptionCounts(),
       winningOptions: this.calcWinningOptions(this.thresholdDenominator),
       electorate: this.proposal.electorate,
@@ -103,7 +86,10 @@ export class ResultBuilder {
   private addVote(vote: VoteSummary) {
     const count = this.allCounts.get(vote.option) || 0
 
-    this.allCounts.set(vote.option, count + vote.weight)
+    // Count the number of NFTs if the PROPOSAL is nftWeight
+    const voteWeight = this.proposal.nftWeight ? vote.nftCount : 1
+
+    this.allCounts.set(vote.option, count + voteWeight)
   }
 
   /**
@@ -127,7 +113,9 @@ export class ResultBuilder {
    */
   private calcWinningOptions(denominator: number): IResult['winningOptions'] {
     if (this.allCounts.size > 0 && denominator === 0) {
-      throw new Error('denominator should only be 0 if there are no votes')
+      throw new Error(
+        'denominator should only be 0 if there are no valid votes'
+      )
     }
 
     let max = 0
@@ -144,6 +132,9 @@ export class ResultBuilder {
 
     const passingThreshold = this.proposal.passingThreshold
     if (passingThreshold) {
+      if (winners.length && !denominator) {
+        throw new Error('Cannot divide by zero when calculating winners')
+      }
       winners = winners.filter((option) => {
         // This code should not be running if the denominator is 0 as then there should be no options that were voted on
         let percentage = ((this.allCounts.get(option) || 0) / denominator) * 100
