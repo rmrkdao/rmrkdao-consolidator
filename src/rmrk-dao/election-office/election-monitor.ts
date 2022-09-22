@@ -15,14 +15,6 @@ import { TallyMachine } from './tally-machine'
 
 const lock = new ConsolidationLock('election-monitor-2.0.0')
 
-/**
- * The target custodian Kusama address which shall be used for processing matching PROPOSALs and creating RESULTs
- */
-const CUSTODIAN_KUSAMA_ADDRESS = process.env.CUSTODIAN_KUSAMA_ADDRESS
-if (!CUSTODIAN_KUSAMA_ADDRESS) {
-  throw new Error('CUSTODIAN_KUSAMA_ADDRESS env variable must be set')
-}
-
 const SECRET_SEED_ID = process.env.SECRET_SEED_ID
 if (!SECRET_SEED_ID) {
   throw new Error('Missing SECRET_SEED_ID')
@@ -81,6 +73,8 @@ const listenAndProcess = async () => {
   })
   const secretaryOfState = await SecretaryOfState.create(api, secretSeed)
 
+  console.log(`Custodian ready: ${secretaryOfState.getKusamaAddress()}`)
+
   // Lock to be used to prevent multiple blocks to be processed simultaneously
   let syncLock = false
 
@@ -103,7 +97,7 @@ const listenAndProcess = async () => {
       const proposals = await prisma.proposal.findMany({
         where: {
           status: ProposalStatus.ready_to_count,
-          custodian: CUSTODIAN_KUSAMA_ADDRESS,
+          custodian: secretaryOfState.getKusamaAddress(), // TODO: Consider a wallet with multiple addresses
         },
       })
 

@@ -11,13 +11,18 @@ export class SecretaryOfState {
     // Construct the keyring after the API (crypto has an async init)
     const keyring = new Keyring({
       type: 'sr25519',
-      ss58Format: KUSAMA_SS58_FORMAT,
+      ss58Format: KUSAMA_SS58_FORMAT, // Must be in Kusama format
     })
 
     const keyringPair = keyring.addFromUri(secretSeed)
 
     return new SecretaryOfState(keyringPair)
   }
+
+  public getKusamaAddress() {
+    return this.keyringPair.address
+  }
+
   /**
    * @see https://polkadot.js.org/docs/substrate/extrinsics#remarkremark-bytes
    * @param resultData
