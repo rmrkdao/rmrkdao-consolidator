@@ -80,9 +80,9 @@ Object {
   "changes": Array [],
   "id": "DaoQkNgxobgpKfd9NmETnWe6FCfDERduSTR2YiFDRGKvL17",
   "maxOptions": 100,
-  "proposalFee": 110000000000n,
-  "recertifyFee": 1000000000000n,
-  "voteFee": 50000000000n,
+  "proposalFee": "110000000000",
+  "recertifyFee": "1000000000000",
+  "voteFee": "50000000000",
 }
 `)
   })

@@ -47,10 +47,13 @@ export const kusamaEncodeAddress = (address: string) => {
  * returns the value as a BigInt
  * @param {any} value
  * @param _helpers
- * @returns {BigInt}
+ * @returns {string}
  * @throws
  */
-export const u128Validator: CustomValidator = (value, _helpers) => {
+export const u128Validator: CustomValidator = (
+  value: any,
+  _helpers
+): string => {
   let int: BigInt | undefined
   try {
     int = BigInt(value)
@@ -63,7 +66,7 @@ export const u128Validator: CustomValidator = (value, _helpers) => {
   if (int < BigInt(0)) {
     throw new Error('Value cannot be negative')
   }
-  return int
+  return int.toString()
 }
 
 /**

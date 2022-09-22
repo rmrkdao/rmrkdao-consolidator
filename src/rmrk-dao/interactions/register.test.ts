@@ -12,9 +12,9 @@ describe('Should parse valid REGISTER interactions payloads', () => {
     )
     const result = Register.parseData(happyDayRegisterRawPayload)
 
-    expect(result.proposalFee).toBe(BigInt('2000'))
-    expect(result.voteFee).toBe(BigInt('1000'))
-    expect(result.recertifyFee).toBe(BigInt('3000'))
+    expect(result.proposalFee).toBe('2000')
+    expect(result.voteFee).toBe('1000')
+    expect(result.recertifyFee).toBe('3000')
     expect(result.maxOptions).toBe(100)
   })
 
@@ -97,9 +97,9 @@ describe('Should parse valid REGISTER interactions payloads', () => {
     )
     const result = Register.parseData(happyDayRegisterRawPayload)
 
-    expect(result.proposalFee).toBe(BigInt(0))
-    expect(result.voteFee).toBe(BigInt('1000'))
-    expect(result.recertifyFee).toBe(BigInt('3000'))
+    expect(result.proposalFee).toBe('0')
+    expect(result.voteFee).toBe('1000')
+    expect(result.recertifyFee).toBe('3000')
     expect(result.maxOptions).toBe(100)
   })
 
@@ -115,9 +115,9 @@ describe('Should parse valid REGISTER interactions payloads', () => {
 
     const result = Register.parseData(happyDayRegisterRawPayload)
 
-    expect(result.proposalFee).toBe(BigInt(2000))
-    expect(result.voteFee).toBe(BigInt(1000))
-    expect(result.recertifyFee).toBe(BigInt(3000))
+    expect(result.proposalFee).toBe('2000')
+    expect(result.voteFee).toBe('1000')
+    expect(result.recertifyFee).toBe('3000')
     expect(result.maxOptions).toBe(100)
   })
 })
