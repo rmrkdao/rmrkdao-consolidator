@@ -11,6 +11,7 @@ export enum INTERACTION_TYPES {
   PROPOSE = 'PROPOSE',
   VOTE = 'VOTE',
   DEREGISTER = 'DEREGISTER',
+  SUBMIT = 'SUBMIT',
 }
 
 /**

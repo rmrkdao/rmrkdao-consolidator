@@ -7,8 +7,9 @@ import '../../patch'
 import { PgAdapter } from '../../rmrk2/pg-adapter'
 import { ConsolidationLock } from '../../services/consolidation-lock'
 import { PgDatabaseAdapter } from '../database-adapter/pg-database-adapter'
+import { getSecretSeed as getSecret } from './helpers'
+import { SecretaryOfState } from './secretary-of-state'
 import { TallyMachine } from './tally-machine'
-import { IResult } from './types'
 
 // TODO: Check for proposals that are ready to count votes for. There could be a field on the proposal table that signals this.
 
@@ -18,9 +19,18 @@ const lock = new ConsolidationLock('election-monitor-2.0.0')
  * The target custodian Kusama address which shall be used for processing matching PROPOSALs and creating RESULTs
  */
 const CUSTODIAN_KUSAMA_ADDRESS = process.env.CUSTODIAN_KUSAMA_ADDRESS
-
 if (!CUSTODIAN_KUSAMA_ADDRESS) {
   throw new Error('CUSTODIAN_KUSAMA_ADDRESS env variable must be set')
+}
+
+const SECRET_SEED_ID = process.env.SECRET_SEED_ID
+if (!SECRET_SEED_ID) {
+  throw new Error('Missing SECRET_SEED_ID')
+}
+
+const AWS_REGION = process.env.AWS_REGION
+if (!AWS_REGION) {
+  throw new Error('Missing AWS_REGION')
 }
 
 const main = async () => {
@@ -64,6 +74,13 @@ const listenAndProcess = async () => {
   const api = await getApiWithReconnect([KUSAMA_NODE_WS])
   console.log('got api connection')
 
+  // Create secretary of state (object responsible for submitting RESULTs on-chain)
+  const secretSeed = await getSecret({
+    secretId: SECRET_SEED_ID,
+    region: AWS_REGION,
+  })
+  const secretaryOfState = await SecretaryOfState.create(api, secretSeed)
+
   // Lock to be used to prevent multiple blocks to be processed simultaneously
   let syncLock = false
 
@@ -91,7 +108,7 @@ const listenAndProcess = async () => {
       })
 
       for (const proposal of proposals) {
-        const unverifiedVotes = await prisma.vote.findMany({
+        const partiallyVerifiedVotes = await prisma.vote.findMany({
           where: { proposalId: proposal.id },
         })
         const rmrkdaoDb = new PgDatabaseAdapter()
@@ -110,18 +127,22 @@ const listenAndProcess = async () => {
         // Create a RESULT for the PROPOSAL
         const tallyMachine = new TallyMachine(
           proposal,
-          unverifiedVotes,
+          partiallyVerifiedVotes,
           snapshotBlock,
           rmrkDb
         )
-        const result = await tallyMachine.prepareResult(
-          CUSTODIAN_KUSAMA_ADDRESS,
-          false
-        )
+        const result = await tallyMachine.prepareResult(false)
 
         // Submit RESULT to blockchain
-        await submitResult(result)
+        // TODO: Consider the case where the process is killed after transaction starts but before the proposal status is updated in the database
+        const hash = await secretaryOfState.submitResult(api, result)
 
+        console.log(
+          `SUBMIT (for proposal ${proposal.id}) interaction extrinsic successfully finalized on chain`,
+          hash
+        )
+
+        // TODO: Consider case where the proposal isn't able to be saved (which would lead to multiple RESULTs being submitted on chain)
         await prisma.proposal.update({
           where: { id: proposal.id },
           data: { status: { set: ProposalStatus.counted } },
@@ -136,8 +157,4 @@ const listenAndProcess = async () => {
       throw e
     }
   })
-}
-
-async function submitResult(result: IResult) {
-  throw new Error('Function not implemented.')
 }
