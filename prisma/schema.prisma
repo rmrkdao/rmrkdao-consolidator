@@ -155,10 +155,10 @@ model Vote {
 
 model Result {
   id                   String  @id
-  proposalId           String
+  proposalId           String  @map("proposal_id")
   count                Json
-  winningOptions       Json
-  thresholdDenominator Float
+  winningOptions       Json    @map("winning_options")
+  thresholdDenominator Float   @map("threshold_denominator")
   recertify            Boolean
 
   @@index([proposalId])
@@ -174,7 +174,6 @@ enum VoteStatus {
 }
 
 // TODO: Implement history triggers
-// model Result
 // TODO: tables tracked in the History2 table must have an id column as primary 
 
 model BlockTime {

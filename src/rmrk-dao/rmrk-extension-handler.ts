@@ -1,11 +1,10 @@
-import { Prisma } from '@prisma/client'
 import { IRmrkExtensionHandler } from 'rmrk-tools/dist/tools/consolidator/adapters/types'
 import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
-import { RMRK_DAO_PREFIX, INTERACTION_TYPES } from '../app-constants'
+import { INTERACTION_TYPES, RMRK_DAO_PREFIX } from '../app-constants'
 import { IRmrkDaoDatabaseAdapter } from './database-adapter'
 import { Propose } from './interactions/propose'
 import { Register } from './interactions/register'
-import { prisma } from '../db'
+import { SubmitInteraction } from './interactions/submit'
 import { VoteInteraction } from './interactions/vote'
 
 export class RmrkExtensionHandler implements IRmrkExtensionHandler {
@@ -33,6 +32,11 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
       case INTERACTION_TYPES.VOTE:
         {
           return await this.vote(remark)
+        }
+        break
+      case INTERACTION_TYPES.SUBMIT:
+        {
+          return await this.submit(remark)
         }
         break
       case INTERACTION_TYPES.DEREGISTER:
@@ -94,6 +98,23 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
 
     // Log success
     console.log(`Processed VOTE ${voteInteraction.id}`)
+  }
+
+  private async submit(remark: Remark): Promise<any> {
+    let submitInteraction: SubmitInteraction | undefined
+    try {
+      submitInteraction = await SubmitInteraction.fromRemark(remark, this.db)
+    } catch (e) {
+      // TODO: Save error to database
+      console.log('Invalid SUBMIT', (e as Error).message)
+      return
+    }
+
+    // Stop execution if error saving to database (don't catch error)
+    await submitInteraction.save(this.db)
+
+    // Log success
+    console.log(`Processed SUBMIT ${submitInteraction.id}`)
   }
 
   private async deregister(remark: Remark): Promise<any> {
