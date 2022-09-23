@@ -58,12 +58,12 @@ export class SubmitInteraction implements ISubmitInteraction {
 
     // Check that CUSTODIAN exists
     const custodian = await db.getCustodian(remark.caller)
-    if (!proposal) {
-      throw new Error(`Proposal (${data.proposalId}) does not exist`)
+    if (!custodian) {
+      throw new Error(`CUSTODIAN (${remark.caller}) does not exist`)
     }
 
     // Check that the count object keys are listed in the proposal options
-    for (const [option, value] of Object.entries(data.count)) {
+    for (const option of Object.keys(data.count)) {
       if (!(option in (proposal.options as ProposalOptions))) {
         throw new Error(
           `${option} not found in PROPOSAL ${proposal.id} options`
@@ -111,7 +111,7 @@ export class SubmitInteraction implements ISubmitInteraction {
 export const submitPayloadSchema = Joi.object<IResult>({
   proposalId: proposalIdSchema,
   count: Joi.custom(resultCountObjectValidator).required(),
-  winningOptions: Joi.array().items(Joi.number().required()).required(),
-  thresholdDenominator: Joi.number().required(),
+  winningOptions: Joi.array().items(Joi.number().integer().strict()).required(),
+  thresholdDenominator: Joi.number().strict().required(),
   recertify: Joi.boolean().required(),
 })

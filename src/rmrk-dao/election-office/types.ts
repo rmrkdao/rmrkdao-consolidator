@@ -21,7 +21,7 @@ export type VotesWithNfts = Map<
 export interface IResult {
   proposalId: string
   count: Record<string, number>
-  winningOptions: string[]
+  winningOptions: number[]
   thresholdDenominator: number
   recertify: boolean
 }

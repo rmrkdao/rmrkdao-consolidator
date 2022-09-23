@@ -154,7 +154,7 @@ export function isObject(value: any): value is Object {
 }
 
 // Make sure the keys are numeric strings no larger than max int
-export function isIntegerString(value: string) {
+export function isIntegerString(value: string): boolean {
   if (value.includes('.')) {
     return false
   }
@@ -162,4 +162,6 @@ export function isIntegerString(value: string) {
   if (!Number.isInteger(x) || x < 0) {
     return false
   }
+
+  return true
 }

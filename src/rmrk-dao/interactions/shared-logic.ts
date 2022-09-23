@@ -1,3 +1,7 @@
 import Joi from 'joi'
 
-export const proposalIdSchema = Joi.string().alphanum().length(10).required()
+export const proposalIdSchema = Joi.string()
+  .alphanum()
+  .length(10)
+  .strict()
+  .required()
