@@ -154,10 +154,14 @@ model Vote {
 }
 
 model Result {
-  id           String  @id
-  // Has the result been processed by the consolidator
-  consolidated Boolean
+  id                   String  @id
+  proposalId           String
+  count                Json
+  winningOptions       Json
+  thresholdDenominator Float
+  recertify            Boolean
 
+  @@index([proposalId])
   @@map("result")
 }
 

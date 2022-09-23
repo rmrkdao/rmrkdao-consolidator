@@ -6,6 +6,7 @@ import {
   RMRK_DAO_PREFIX,
   VERSION,
 } from './app-constants'
+import { IResult } from './rmrk-dao/election-office/types'
 
 /**
  * Throws if the RMRK_DAO base is not valid
@@ -89,7 +90,7 @@ export const kusamaAddressValidator: CustomValidator = (value, _helpers) => {
  */
 export const proposalOptionsValidator: CustomValidator = (value, _helpers) => {
   // Make sure it is an object
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+  if (!isObject(value)) {
     throw new Error('Value must be a object dictionary')
   }
 
@@ -97,13 +98,8 @@ export const proposalOptionsValidator: CustomValidator = (value, _helpers) => {
   for (const key of Object.keys(value)) {
     count++
 
-    // Make sure the keys are numeric strings no larger than max int
-    if (key.includes('.')) {
-      throw new Error('Keys must be integers')
-    }
-    const x = parseInt(key)
-    if (!Number.isInteger(x) || x < 0) {
-      throw new Error('Keys must be non-negative integers')
+    if (!isIntegerString(key)) {
+      throw new Error('Keys must be non-negative integer string')
     }
 
     // Make sure the values are strings
@@ -120,4 +116,50 @@ export const proposalOptionsValidator: CustomValidator = (value, _helpers) => {
   }
 
   return value
+}
+
+/**
+ * Custom Joi validator that checks that the input value is an object of with numeric strings
+ * as keys and numbers as values
+ * @param {any} value
+ * @param _helpers
+ * @return {IResult['count']}
+ */
+export const resultCountObjectValidator: CustomValidator = (
+  value: any,
+  _helpers
+): IResult['count'] => {
+  // Make sure it is an object
+  if (!isObject(value)) {
+    throw new Error('Value must be a object dictionary')
+  }
+
+  for (const key of Object.keys(value)) {
+    if (!isIntegerString(key)) {
+      throw new Error('Keys must be non-negative integer string')
+    }
+
+    // Make sure the values are numbers
+    const option = value[key]
+    if (typeof option !== 'number') {
+      throw new Error('Option values must be numbers')
+    }
+  }
+
+  return value
+}
+
+export function isObject(value: any): value is Object {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+// Make sure the keys are numeric strings no larger than max int
+export function isIntegerString(value: string) {
+  if (value.includes('.')) {
+    return false
+  }
+  const x = parseInt(value)
+  if (!Number.isInteger(x) || x < 0) {
+    return false
+  }
 }

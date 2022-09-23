@@ -6,9 +6,11 @@ import {
   Vote,
   VoteStatus,
   ProposalStatus,
+  Result,
 } from '@prisma/client'
 import { Propose } from '../interactions/propose'
 import { Register } from '../interactions/register'
+import { SubmitInteraction } from '../interactions/submit'
 import { VoteInteraction } from '../interactions/vote'
 import { IRmrkDaoDatabaseAdapter, VoteChange } from './types'
 
@@ -21,6 +23,7 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
   collections: Record<string, Collection2> = {}
   blockTimes: Record<number, number> = {}
   votes: Record<string, Vote> = {}
+  results: Record<string, Result> = {}
 
   async upsertCustodian(register: Register): Promise<Custodian> {
     const existingCustodian = this.custodians[register.id]
@@ -146,6 +149,28 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
     return Object.values(this.votes).filter(
       (vote) => vote.proposalId === proposalId
     )
+  }
+
+  async saveResult(submitInteraction: SubmitInteraction): Promise<Result> {
+    const {
+      proposalId,
+      count,
+      winningOptions,
+      thresholdDenominator,
+      recertify,
+    } = submitInteraction.resultData
+
+    const result: Result = {
+      id: submitInteraction.id,
+      proposalId,
+      count,
+      winningOptions,
+      thresholdDenominator,
+      recertify,
+    }
+
+    this.results[result.id] = result
+    return result
   }
 
   async getBlockTime(block: number): Promise<number | null> {

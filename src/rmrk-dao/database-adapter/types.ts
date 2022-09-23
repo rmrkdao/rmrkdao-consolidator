@@ -1,6 +1,7 @@
-import { Collection2, Custodian, Proposal, Vote } from '@prisma/client'
+import { Collection2, Custodian, Proposal, Result, Vote } from '@prisma/client'
 import { Propose } from '../interactions/propose'
 import { Register } from '../interactions/register'
+import { SubmitInteraction } from '../interactions/submit'
 import { VoteInteraction } from '../interactions/vote'
 
 /**
@@ -62,6 +63,13 @@ export interface IRmrkDaoDatabaseAdapter {
    * @returns {Promise<Votes[]>}
    */
   getVotes(proposalId: string): Promise<Vote[]>
+
+  /**
+   * Save a RESULT via SUBMIT interaction
+   * @param {SubmitInteraction} submitInteraction
+   * @return {Promise<Result>}
+   */
+  saveResult(submitInteraction: SubmitInteraction): Promise<Result>
 
   /**
    * Get the unix time in milliseconds of a block

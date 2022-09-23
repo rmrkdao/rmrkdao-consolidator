@@ -1,10 +1,18 @@
-import { Collection2, Custodian, Prisma, Proposal, Vote } from '@prisma/client'
+import {
+  Collection2,
+  Custodian,
+  Prisma,
+  Proposal,
+  Result,
+  Vote,
+} from '@prisma/client'
 import { getApiWithReconnect } from 'rmrk-tools'
 import { KUSAMA_NODE_WS } from '../../app-constants'
 import { prisma } from '../../db'
 import { getAndSaveBlockTime } from '../../services/block-time'
 import { Propose } from '../interactions/propose'
 import { Register } from '../interactions/register'
+import { SubmitInteraction } from '../interactions/submit'
 import { VoteInteraction } from '../interactions/vote'
 import { IRmrkDaoDatabaseAdapter, VoteChange } from './types'
 
@@ -147,6 +155,27 @@ export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
 
   async getVotes(proposalId: string): Promise<Vote[]> {
     return await prisma.vote.findMany({ where: { proposalId } })
+  }
+
+  async saveResult(submitInteraction: SubmitInteraction): Promise<Result> {
+    const {
+      proposalId,
+      count,
+      winningOptions,
+      thresholdDenominator,
+      recertify,
+    } = submitInteraction.resultData
+
+    return await prisma.result.create({
+      data: {
+        id: submitInteraction.id,
+        proposalId,
+        count,
+        winningOptions,
+        thresholdDenominator,
+        recertify,
+      },
+    })
   }
 
   /**

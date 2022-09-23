@@ -17,6 +17,7 @@ import {
 } from '../../types'
 import { getIssuerAtBlock } from '../../rmrk2/utils'
 import { IRmrkDaoDatabaseAdapter } from '../database-adapter/'
+import { proposalIdSchema } from './shared-logic'
 
 export class Propose implements IProposal {
   block: number
@@ -71,6 +72,7 @@ export class Propose implements IProposal {
     }
 
     // Check that Custodian exists
+    // TODO: Check that CUSTODIAN also is still registered at the block of the PROPOSE interaction
     const custodian = await db.getCustodian(data.custodian)
     if (!custodian) {
       throw new Error(`Custodian (${data.custodian}) does not exist`)
@@ -171,7 +173,7 @@ export class Propose implements IProposal {
 }
 
 export const proposePayloadSchema = Joi.object<IProposePayload>({
-  id: Joi.string().alphanum().length(10).required(),
+  id: proposalIdSchema,
   custodian: Joi.string().custom(kusamaAddressValidator).required(),
   name: Joi.string().max(10000).required(),
   description: Joi.string().max(10000).required().allow(''),

@@ -22,7 +22,6 @@ export interface IResult {
   proposalId: string
   count: Record<string, number>
   winningOptions: string[]
-  electorate: boolean
   thresholdDenominator: number
   recertify: boolean
 }
