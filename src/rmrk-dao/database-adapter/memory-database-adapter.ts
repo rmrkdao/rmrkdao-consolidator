@@ -162,6 +162,7 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
 
     const result: Result = {
       id: submitInteraction.id,
+      block: submitInteraction.block,
       proposalId,
       count,
       winningOptions,

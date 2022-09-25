@@ -127,6 +127,8 @@ const listenAndProcess = async () => {
         )
         const result = await tallyMachine.prepareResult(false)
 
+        console.log(`About to SUBMIT (for proposal ${proposal.id})`)
+
         // Submit RESULT to blockchain
         // TODO: Consider the case where the process is killed after transaction starts but before the proposal status is updated in the database
         const hash = await secretaryOfState.submitResult(api, result)
@@ -135,6 +137,18 @@ const listenAndProcess = async () => {
           `SUBMIT (for proposal ${proposal.id}) interaction extrinsic successfully finalized on chain`,
           hash
         )
+
+        // Save submission to database
+        await prisma.resultSubmission.create({
+          data: {
+            extrinsic: hash,
+            proposalId: result.proposalId,
+            count: result.count,
+            winningOptions: result.winningOptions,
+            thresholdDenominator: result.thresholdDenominator,
+            recertify: result.recertify,
+          },
+        })
 
         // TODO: Consider case where the proposal isn't able to be saved (which would lead to multiple RESULTs being submitted on chain)
         await prisma.proposal.update({

@@ -155,14 +155,31 @@ model Vote {
 
 model Result {
   id                   String  @id
+  block                Int
   proposalId           String  @map("proposal_id")
   count                Json
   winningOptions       Json    @map("winning_options")
   thresholdDenominator Float   @map("threshold_denominator")
   recertify            Boolean
 
+  @@index([block])
   @@index([proposalId])
   @@map("result")
+}
+
+// Results that were submitted by the custodian
+model ResultSubmission {
+  extrinsic            String   @id
+  addedToDb            DateTime @default(now()) @map("added_to_db")
+  proposalId           String   @map("proposal_id")
+  count                Json
+  winningOptions       Json     @map("winning_options")
+  thresholdDenominator Float    @map("threshold_denominator")
+  recertify            Boolean
+
+  @@index([addedToDb])
+  @@index([proposalId])
+  @@map("result_submission")
 }
 
 enum VoteStatus {

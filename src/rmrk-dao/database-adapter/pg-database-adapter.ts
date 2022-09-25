@@ -169,6 +169,7 @@ export class PgDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
     return await prisma.result.create({
       data: {
         id: submitInteraction.id,
+        block: submitInteraction.block,
         proposalId,
         count,
         winningOptions,

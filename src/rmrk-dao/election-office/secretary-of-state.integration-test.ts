@@ -28,8 +28,7 @@ test('able to SUBMIT on-chain', async () => {
       '0': 1,
       '1': 2,
     },
-    winningOptions: ['1'],
-    electorate: false,
+    winningOptions: [1],
     thresholdDenominator: 3,
     recertify: false,
   }
