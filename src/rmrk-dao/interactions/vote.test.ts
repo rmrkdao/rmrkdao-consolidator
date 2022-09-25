@@ -244,3 +244,51 @@ test('Invalid option', () => {
     await VoteInteraction.fromRemark(remark, db)
   }).rejects.toThrowError(`Option 3 is not available in PROPOSAL 1000000000`)
 })
+
+test('Option cannot have decimal', async () => {
+  const remark: Remark = {
+    remark: 'RMRKDAO::VOTE::2.0.0::1000000000::2.0',
+    block: 8900000,
+    offset: 0,
+    interaction_type: 'VOTE',
+    caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
+    version: '2.0.0',
+    extra_ex: [
+      {
+        call: 'balances.transfer',
+        value: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh,1000',
+        caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
+      },
+    ],
+  }
+
+  const db = new MemoryDatabaseAdapter()
+
+  expect(async () => {
+    const result = await VoteInteraction.fromRemark(remark, db)
+  }).rejects.toThrowError('option must be a integer')
+})
+
+test('Option must be an integer', async () => {
+  const remark: Remark = {
+    remark: 'RMRKDAO::VOTE::2.0.0::1000000000::one',
+    block: 8900000,
+    offset: 0,
+    interaction_type: 'VOTE',
+    caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
+    version: '2.0.0',
+    extra_ex: [
+      {
+        call: 'balances.transfer',
+        value: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh,1000',
+        caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
+      },
+    ],
+  }
+
+  const db = new MemoryDatabaseAdapter()
+
+  expect(async () => {
+    const result = await VoteInteraction.fromRemark(remark, db)
+  }).rejects.toThrowError('option must be a integer')
+})

@@ -241,12 +241,11 @@ Object {
   "count": Object {
     "1": 1,
   },
-  "electorate": true,
   "proposalId": "1000000000",
   "recertify": false,
   "thresholdDenominator": 1,
   "winningOptions": Array [
-    "1",
+    1,
   ],
 }
 `)
@@ -270,13 +269,12 @@ Object {
     "0": 1,
     "1": 1,
   },
-  "electorate": true,
   "proposalId": "1000000000",
   "recertify": false,
   "thresholdDenominator": 2,
   "winningOptions": Array [
-    "1",
-    "0",
+    1,
+    0,
   ],
 }
 `)
@@ -301,13 +299,12 @@ Object {
     "0": 1,
     "1": 1,
   },
-  "electorate": true,
   "proposalId": "1000000000",
   "recertify": false,
   "thresholdDenominator": 3,
   "winningOptions": Array [
-    "1",
-    "0",
+    1,
+    0,
   ],
 }
 `)
@@ -369,13 +366,12 @@ Object {
     "0": 1,
     "1": 1,
   },
-  "electorate": false,
   "proposalId": "1000000000",
   "recertify": false,
   "thresholdDenominator": 2,
   "winningOptions": Array [
-    "1",
-    "0",
+    1,
+    0,
   ],
 }
 `)
@@ -395,7 +391,6 @@ test("Doesn't count burned NFTs", async () => {
   expect(result).toMatchInlineSnapshot(`
 Object {
   "count": Object {},
-  "electorate": true,
   "proposalId": "1000000000",
   "recertify": false,
   "thresholdDenominator": 0,
@@ -420,12 +415,11 @@ Object {
   "count": Object {
     "1": 1,
   },
-  "electorate": true,
   "proposalId": "1000000000",
   "recertify": false,
   "thresholdDenominator": 1,
   "winningOptions": Array [
-    "1",
+    1,
   ],
 }
 `)
@@ -508,7 +502,6 @@ Object {
     "1": 1,
     "2": 1,
   },
-  "electorate": true,
   "proposalId": "3000000000",
   "recertify": false,
   "thresholdDenominator": 4,
@@ -584,12 +577,11 @@ Object {
     "0": 2,
     "1": 1,
   },
-  "electorate": true,
   "proposalId": "3000000000",
   "recertify": false,
   "thresholdDenominator": 3,
   "winningOptions": Array [
-    "0",
+    0,
   ],
 }
 `)
@@ -640,12 +632,11 @@ Object {
   "count": Object {
     "0": 2,
   },
-  "electorate": true,
   "proposalId": "3000000000",
   "recertify": false,
   "thresholdDenominator": 2,
   "winningOptions": Array [
-    "0",
+    0,
   ],
 }
 `)
@@ -696,12 +687,11 @@ Object {
   "count": Object {
     "0": 1,
   },
-  "electorate": true,
   "proposalId": "3000000000",
   "recertify": false,
   "thresholdDenominator": 1,
   "winningOptions": Array [
-    "0",
+    0,
   ],
 }
 `)

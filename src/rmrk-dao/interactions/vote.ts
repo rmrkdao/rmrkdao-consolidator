@@ -91,13 +91,16 @@ export class VoteInteraction {
   }
 
   /**
-   * Parse data into option string
+   * Check that option is string encoded integer
    * @param {string} dataString
    * @returns {string}
    */
   static parseData(dataString: string): string {
-    const data = decodeURIComponent(dataString)
-    return data
+    const option = parseInt(dataString)
+    if (dataString.includes('.') || isNaN(option)) {
+      throw new Error('option must be a integer')
+    }
+    return dataString
   }
 
   /**

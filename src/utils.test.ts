@@ -42,14 +42,14 @@ Object {
     const value = { '0.1': 'Apples', '1': 'Bananas', '2': 'Cherries' }
     expect(() => {
       proposalOptionsValidator(value, helper)
-    }).toThrowError('Keys must be integers')
+    }).toThrowError('Keys must be non-negative integer string')
   })
 
   test('key is -1', () => {
     const value = { '-1': 'Apples', '1': 'Bananas', '2': 'Cherries' }
     expect(() => {
       proposalOptionsValidator(value, helper)
-    }).toThrowError('Keys must be non-negative integers')
+    }).toThrowError('Keys must be non-negative integer string')
   })
 
   test('option is not a string', () => {

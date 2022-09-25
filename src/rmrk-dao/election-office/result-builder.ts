@@ -73,7 +73,6 @@ export class ResultBuilder {
       proposalId: this.proposal.id,
       count: this.getOptionCounts(),
       winningOptions: this.calcWinningOptions(this.thresholdDenominator),
-      electorate: this.proposal.electorate,
       thresholdDenominator: this.thresholdDenominator,
       recertify: this.recertify,
     }
@@ -109,7 +108,7 @@ export class ResultBuilder {
   /**
    * Calculate the winning options
    * @param {number} denominator Should only be zero if there are no votes
-   * @returns {string[]}
+   * @returns {IResult['winningOptions']}
    */
   private calcWinningOptions(denominator: number): IResult['winningOptions'] {
     if (this.allCounts.size > 0 && denominator === 0) {
@@ -142,6 +141,10 @@ export class ResultBuilder {
       })
     }
 
-    return winners
+    /**
+     * winnerOptions must be an array of integers
+     * @see https://github.com/rmrkdao/rmrkdao-spec/issues/13#issuecomment-1241300472
+     */
+    return winners.map(Number)
   }
 }
