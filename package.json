@@ -1,6 +1,6 @@
 {
   "name": "rmrk-dao-consolidator",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Custom RMRK consolidator for the RMRK::DAO project",
   "repository": "git@gitlab.com:rmrk-dao/rmrk-dao-consolidator.git",
   "author": "Spencer Brown <git@spencerwebservices.com>",
