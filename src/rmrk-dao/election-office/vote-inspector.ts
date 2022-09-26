@@ -77,7 +77,7 @@ export class VoteInspector {
    * Get vote summaries
    * @returns {VoteSummary[]}
    */
-  public getVoteSummaries() {
+  public getValidVoteSummaries(): VoteSummary[] {
     const counts: VoteSummary[] = []
 
     this.qualifiedVotesWithNfts.forEach((value) => {
@@ -89,6 +89,19 @@ export class VoteInspector {
     })
 
     return counts
+  }
+
+  /**
+   * Gets invalid votes.
+   * NOTE:
+   * - This should be ran after all votes have been processed
+   * - This only includes VOTEs that this class knows about (i.e., not failed VOTEs that were not consolidated)
+   * @returns {string[]} ids of invalid votes
+   */
+  public getInvalidVotes(): string[] {
+    return this.partiallyVerifiedVotes
+      .filter((vote) => !this.qualifiedVotesWithNfts.has(vote.id))
+      .map((vote) => vote.id)
   }
 
   /**

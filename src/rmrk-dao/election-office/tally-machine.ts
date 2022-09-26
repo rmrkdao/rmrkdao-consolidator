@@ -42,7 +42,7 @@ export class TallyMachine {
       : undefined
 
     return new ResultBuilder(this.proposal, recertify)
-      .countValidatedVotes(inspector.getVoteSummaries())
+      .countValidatedVotes(inspector.getValidVoteSummaries())
       .calcThresholdDenominator(maxTurnout)
       .build()
   }
