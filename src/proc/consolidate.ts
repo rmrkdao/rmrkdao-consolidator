@@ -1,14 +1,15 @@
 import { LatestConsolidatingRmrkStatus, ProposalStatus } from '@prisma/client'
-import { fetchRemarks } from 'rmrk-tools'
-import { prisma } from './db'
-import './patch'
-import { consolidate } from './rmrk2/consolidator'
-import { prefixes } from './rmrk2/utils'
-import { ConsolidationLock } from './services/consolidation-lock'
 import exitHook from 'async-exit-hook'
-import { KUSAMA_SS58_FORMAT, KUSAMA_NODE_WS } from './app-constants'
-import { getAndSaveBlockTime } from './services/block-time'
-import { getApiWithReconnect } from 'rmrk-tools'
+import { Gauge } from 'prom-client'
+import { fetchRemarks, getApiWithReconnect } from 'rmrk-tools'
+import { KUSAMA_NODE_WS, KUSAMA_SS58_FORMAT } from '../app-constants'
+import { prisma } from '../db'
+import { metricsServer } from '../metrics-server'
+import '../patch'
+import { consolidate } from '../rmrk2/consolidator'
+import { prefixes } from '../rmrk2/utils'
+import { getAndSaveBlockTime } from '../services/block-time'
+import { ConsolidationLock } from '../services/consolidation-lock'
 
 const lock = new ConsolidationLock('2.0.0')
 
@@ -24,6 +25,8 @@ const main = async () => {
 
   // Start listening for new blocks and processing them
   await listenAndProcess()
+
+  metricsServer()
 }
 
 // Release the acquired consolidation lock from the database, if any
@@ -50,6 +53,14 @@ main().catch(console.error)
  * Listen to new blocks and process unprocessed blocks
  */
 const listenAndProcess = async () => {
+  const latestConsolidatedGauge = new Gauge({
+    name: 'latest_consolidated_block',
+    help: 'Last Kusama block consolidated',
+  })
+  const targetBlock = new Gauge({
+    name: 'target_block',
+    help: 'The current target block',
+  })
   const api = await getApiWithReconnect([KUSAMA_NODE_WS])
   console.log('got api connection')
 
@@ -69,7 +80,6 @@ const listenAndProcess = async () => {
       syncLock = true
 
       const blockNumber = Number(header.number)
-      console.log(`Chain is at block: #${blockNumber}`)
 
       const info = await prisma.consolidationInfo.findUnique({
         where: { version: '2.0.0' },
@@ -78,12 +88,14 @@ const listenAndProcess = async () => {
         throw new Error('Missing consolidation info')
       }
 
+      targetBlock.set(blockNumber)
+      // TODO: Consider making logic more clear for getting the latest consolidated block
+      latestConsolidatedGauge.set(info.latestBlock - 1)
+
       // info.latestBlock should be the next block that needs to be processed
       for (let x = info.latestBlock; x <= blockNumber; x++) {
         // Save block unix timestamp
         const blockUnixMilliseconds = await getAndSaveBlockTime(api, x)
-
-        console.log(`Fetching block ${x} (latest: ${blockNumber})`)
 
         const extracted = await fetchRemarks(
           api,
@@ -103,6 +115,8 @@ const listenAndProcess = async () => {
           where: { endDate: { lt: blockUnixMilliseconds } },
           data: { status: { set: ProposalStatus.ready_to_count } },
         })
+
+        latestConsolidatedGauge.set(x)
       }
 
       // Update consolidation info for what should be the next block to be processed

@@ -11,6 +11,13 @@ import { prisma } from '../db'
 import { LatestConsolidatingRmrkStatus } from '@prisma/client'
 import { PgDatabaseAdapter } from '../rmrk-dao/database-adapter/pg-database-adapter'
 import { RmrkExtensionHandler } from '../rmrk-dao/rmrk-extension-handler'
+import { Counter } from 'prom-client'
+
+const foundRemarks = new Counter({
+  name: 'found_remarks',
+  help: 'Found RMRKDAO & RMRK remarks',
+  labelNames: ['version'],
+})
 
 export const consolidate = async (data: any[], ss58Format: number) => {
   const remarks = getRemarksFromBlocks(data, prefixes, ss58Format)
@@ -36,7 +43,9 @@ export const consolidate = async (data: any[], ss58Format: number) => {
       consolidationInfo.status
     )
   }
-  console.log('got remarks', remarks.length)
+  if (remarks.length) {
+    foundRemarks.labels('2.0.0').inc(remarks.length)
+  }
 
   // TODO: Consider creating these objects once per lifetime of the program
   const pgAdapter = new PgAdapter()

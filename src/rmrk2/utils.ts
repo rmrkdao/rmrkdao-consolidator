@@ -154,7 +154,7 @@ export const restoreFromHistory = async () => {
       )
     }
 
-    console.log('restored history')
+    console.log('restored history:', JSON.stringify(change))
   }
 
   await prisma.history2.deleteMany()

@@ -155,6 +155,8 @@ const listenAndProcess = async () => {
           where: { id: proposal.id },
           data: { status: { set: ProposalStatus.counted } },
         })
+
+        // TODO: Update VOTE statuses
       }
 
       // Unlock

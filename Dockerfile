@@ -46,4 +46,4 @@ COPY --from=optimizer /app/package.json ./package.json
 
 ENTRYPOINT ["/sbin/tini", "--"]
 
-CMD ["/usr/local/bin/node", "build/main"]
+CMD ["/usr/local/bin/node", "build/proc/consolidate"]
