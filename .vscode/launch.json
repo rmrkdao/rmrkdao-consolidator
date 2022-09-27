@@ -17,6 +17,12 @@
       "type": "node-terminal"
     }, 
     {
+      "command": "yarn test:integration",
+      "name": "yarn test:integration",
+      "request": "launch",
+      "type": "node-terminal"
+    }, 
+    {
       "command": "yarn consolidate",
       "name": "yarn consolidate",
       "request": "launch",

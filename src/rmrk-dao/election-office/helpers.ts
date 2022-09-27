@@ -3,13 +3,16 @@ import {
   SecretsManagerClient,
 } from '@aws-sdk/client-secrets-manager'
 
+/**
+ * Get secret seed for importing Kusama wallet
+ * @param {GetSecretInput} input
+ * @returns {string}
+ * @throws
+ */
 export async function getSecretSeed({
   region: aws_region,
   secretId: secret_id,
-}: {
-  region: string
-  secretId: string
-}): Promise<string> {
+}: GetSecretInput): Promise<string> {
   const client = new SecretsManagerClient({ region: aws_region })
   const command = new GetSecretValueCommand({ SecretId: secret_id })
   const response = await client.send(command)
@@ -21,4 +24,9 @@ export async function getSecretSeed({
   } else {
     return response.SecretString || ''
   }
+}
+
+interface GetSecretInput {
+  region: string
+  secretId: string
 }

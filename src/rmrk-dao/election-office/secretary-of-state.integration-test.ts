@@ -14,7 +14,7 @@ let secretaryOfState: SecretaryOfState
 
 beforeAll(async () => {
   api = await getApiWithReconnect(endpoint ? [endpoint] : undefined)
-  secretaryOfState = await SecretaryOfState.create(api, SECRET_SEED)
+  secretaryOfState = await SecretaryOfState.create({ secretSeed: SECRET_SEED })
 }, 30000)
 
 afterAll(async () => {

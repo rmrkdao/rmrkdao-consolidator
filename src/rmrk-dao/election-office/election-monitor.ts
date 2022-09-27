@@ -7,7 +7,7 @@ import '../../patch'
 import { PgAdapter } from '../../rmrk2/pg-adapter'
 import { ConsolidationLock } from '../../services/consolidation-lock'
 import { PgDatabaseAdapter } from '../database-adapter/pg-database-adapter'
-import { getSecretSeed as getSecret } from './helpers'
+import { getSecretSeed } from './helpers'
 import { SecretaryOfState } from './secretary-of-state'
 import { TallyMachine } from './tally-machine'
 
@@ -15,6 +15,9 @@ import { TallyMachine } from './tally-machine'
 
 const lock = new ConsolidationLock('election-monitor-2.0.0')
 
+/**
+ * AWS ARN or ID of the custodian wallet seed secret
+ */
 const SECRET_SEED_ID = process.env.SECRET_SEED_ID
 if (!SECRET_SEED_ID) {
   throw new Error('Missing SECRET_SEED_ID')
@@ -67,11 +70,12 @@ const listenAndProcess = async () => {
   console.log('got api connection')
 
   // Create secretary of state (object responsible for submitting RESULTs on-chain)
-  const secretSeed = await getSecret({
+  const secretSeed = await getSecretSeed({
     secretId: SECRET_SEED_ID,
     region: AWS_REGION,
   })
-  const secretaryOfState = await SecretaryOfState.create(api, secretSeed)
+
+  const secretaryOfState = await SecretaryOfState.create({ secretSeed })
 
   console.log(`Custodian ready: ${secretaryOfState.getKusamaAddress()}`)
 

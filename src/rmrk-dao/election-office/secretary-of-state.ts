@@ -7,7 +7,9 @@ import { IResult } from './types'
 export class SecretaryOfState {
   private constructor(private keyringPair: KeyringPair) {}
 
-  public static async create(api: ApiPromise, secretSeed: string) {
+  public static async create(input: { secretSeed: string }) {
+    const { secretSeed } = input
+
     // Construct the keyring after the API (crypto has an async init)
     const keyring = new Keyring({
       type: 'sr25519',
