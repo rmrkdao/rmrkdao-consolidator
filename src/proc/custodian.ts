@@ -1,18 +1,17 @@
 import { Proposal, ResultCreationQueueStatus } from '@prisma/client'
 import exitHook from 'async-exit-hook'
 import { getApiWithReconnect } from 'rmrk-tools'
-import { KUSAMA_NODE_WS, VERSION } from '../../app-constants'
-import { prisma } from '../../db'
-import '../../patch'
-import { PgAdapter } from '../../rmrk2/pg-adapter'
-import { ConsolidationLock } from '../../services/consolidation-lock'
-import { PgDatabaseAdapter } from '../database-adapter/pg-database-adapter'
-import { getSecretSeed } from './helpers'
-import { SecretaryOfState } from './secretary-of-state'
-import { TallyMachine } from './tally-machine'
+import { KUSAMA_NODE_WS, VERSION } from '../app-constants'
+import { prisma } from '../db'
+import '../patch'
+import { PgAdapter } from '../rmrk2/pg-adapter'
+import { ConsolidationLock } from '../services/consolidation-lock'
+import { PgDatabaseAdapter } from '../rmrk-dao/database-adapter/pg-database-adapter'
+import { getSecretSeed } from '../rmrk-dao/election-office/helpers'
+import { SecretaryOfState } from '../rmrk-dao/election-office/secretary-of-state'
+import { TallyMachine } from '../rmrk-dao/election-office/tally-machine'
 
-// TODO: Check for proposals that are ready to count votes for. There could be a field on the proposal table that signals this.
-
+// TODO: Rename class/table to something more generic
 const lock = new ConsolidationLock('election-monitor-2.0.0')
 
 /**
