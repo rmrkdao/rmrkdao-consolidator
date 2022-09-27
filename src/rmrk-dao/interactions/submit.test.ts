@@ -278,7 +278,6 @@ describe('fromRemark', () => {
       nftWeight: false,
       electorate: false,
       owner: '',
-      status: 'waiting',
     }
 
     const db = new MemoryDatabaseAdapter()
@@ -327,7 +326,6 @@ describe('fromRemark', () => {
       nftWeight: false,
       electorate: false,
       owner: '',
-      status: 'waiting',
     }
 
     const db = new MemoryDatabaseAdapter()
@@ -379,7 +377,6 @@ describe('fromRemark', () => {
       nftWeight: false,
       electorate: false,
       owner: '',
-      status: 'waiting',
     }
     const custodian: Custodian = {
       id: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
@@ -440,7 +437,6 @@ describe('fromRemark', () => {
       nftWeight: false,
       electorate: false,
       owner: '',
-      status: 'waiting',
     }
     const custodian: Custodian = {
       id: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
@@ -501,7 +497,6 @@ describe('fromRemark', () => {
       nftWeight: false,
       electorate: false,
       owner: '',
-      status: 'waiting',
     }
     const custodian: Custodian = {
       id: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',

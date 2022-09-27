@@ -1,4 +1,4 @@
-import { Collection2, Proposal, ProposalStatus } from '@prisma/client'
+import { Collection2, Proposal } from '@prisma/client'
 import { Remark } from 'rmrk-tools/dist/tools/consolidator/remark'
 import { MemoryDatabaseAdapter } from '../database-adapter/memory-database-adapter'
 import { Propose } from './propose'
@@ -502,7 +502,6 @@ describe('create Propose object using fromRemark static method', () => {
       snapshot: 1662155903,
       startDate: 1662069503,
       owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
-      status: ProposalStatus.waiting,
     }
 
     const db = new MemoryDatabaseAdapter()
@@ -587,7 +586,6 @@ describe('create Propose object using fromRemark static method', () => {
       snapshot: 1662155903,
       startDate: 1662069503,
       owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
-      status: ProposalStatus.waiting,
     }
 
     const db = new MemoryDatabaseAdapter()

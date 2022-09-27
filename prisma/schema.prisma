@@ -11,6 +11,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// NOTE: Implement history triggers
+// NOTE: tables tracked in the History2 table must have an id column as primary 
+
 model Nft2 {
   id           String  @id
   block        Int
@@ -112,21 +115,21 @@ model Custodian {
 }
 
 model Proposal {
-  id               String         @id
+  id               String                @id
   block            Int
   custodian        String
   name             String
   description      String
   collections      Json // string[]
   options          Json // string[]
-  passingThreshold Float?         @map("passing_threshold")
-  startDate        Float          @map("start_date")
+  passingThreshold Float?                @map("passing_threshold")
+  startDate        Float                 @map("start_date")
   snapshot         Float
-  endDate          Float          @map("end_date")
-  nftWeight        Boolean        @map("nft_weight")
+  endDate          Float                 @map("end_date")
+  nftWeight        Boolean               @map("nft_weight")
   electorate       Boolean
   owner            String
-  status           ProposalStatus @default(waiting)
+  queue            ResultCreationQueue[]
 
   @@index([block])
   @@index([custodian])
@@ -134,18 +137,17 @@ model Proposal {
   @@index([snapshot])
   @@index([endDate])
   @@index([owner])
-  @@index([status])
   @@map("proposal")
 }
 
+
 model Vote {
-  id         String     @id
+  id         String @id
   block      Int
   caller     String
-  proposalId String     @map("proposal_id")
+  proposalId String @map("proposal_id")
   option     String
-  status     VoteStatus @default(pending)
-  changes    Json       @default("[]")
+  changes    Json   @default("[]")
 
   @@index([block])
   @@index([caller])
@@ -165,6 +167,17 @@ model Result {
   @@index([block])
   @@index([proposalId])
   @@map("result")
+}
+
+// Queue used by the custodian service
+model ResultCreationQueue {
+  proposalId String                    @id @map("proposal_id")
+  status     ResultCreationQueueStatus @default(waiting) @map("status")
+
+  proposal Proposal @relation(fields: [proposalId], references: [id])
+
+  @@index([status])
+  @@map("result_creation_queue")
 }
 
 // Results that were submitted by the custodian
@@ -190,9 +203,6 @@ enum VoteStatus {
   @@map("vote_status")
 }
 
-// TODO: Implement history triggers
-// TODO: tables tracked in the History2 table must have an id column as primary 
-
 model BlockTime {
   block            Int   @id // TODO: Consider using datatype that can hold more numbers
   unixMilliseconds Float @map("unix_milliseconds")
@@ -208,10 +218,11 @@ enum LatestConsolidatingRmrkStatus {
   @@map("latest_consolidating_rmrk_status")
 }
 
-enum ProposalStatus {
+enum ResultCreationQueueStatus {
   waiting
-  ready_to_count
-  counted
+  about_to_submit
+  result_submitted
+  failed_to_submit
 
-  @@map("proposal_status")
+  @@map("result_creation_queue_status")
 }

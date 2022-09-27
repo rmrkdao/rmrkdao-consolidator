@@ -4,8 +4,6 @@ import {
   Proposal,
   Prisma,
   Vote,
-  VoteStatus,
-  ProposalStatus,
   Result,
 } from '@prisma/client'
 import { Propose } from '../interactions/propose'
@@ -87,7 +85,6 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
       nftWeight: propose.nftWeight,
       electorate: propose.electorate,
       owner: propose.owner,
-      status: ProposalStatus.waiting,
     }
     this.proposals[propose.id] = proposal
     return proposal
@@ -113,7 +110,6 @@ export class MemoryDatabaseAdapter implements IRmrkDaoDatabaseAdapter {
       caller: voteInteraction.caller,
       proposalId: voteInteraction.proposalId,
       option: voteInteraction.option,
-      status: VoteStatus.pending,
       changes: [],
     }
 

@@ -1,4 +1,4 @@
-import { Proposal, ProposalStatus, Vote, VoteStatus } from '@prisma/client'
+import { Proposal, Vote } from '@prisma/client'
 import { InMemoryAdapter, OP_TYPES } from 'rmrk-tools'
 import {
   CollectionConsolidated,
@@ -161,7 +161,6 @@ const proposal1: Proposal = {
   snapshot: 1662155903,
   endDate: 1662242303,
   owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
-  status: ProposalStatus.waiting,
 }
 
 const proposal2: Proposal = {
@@ -179,7 +178,6 @@ const proposal2: Proposal = {
   snapshot: 1662155903,
   endDate: 1662242303,
   owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
-  status: ProposalStatus.waiting,
 }
 
 const vote1: Vote = {
@@ -188,7 +186,6 @@ const vote1: Vote = {
   caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
   proposalId: proposal1.id,
   option: '1',
-  status: VoteStatus.pending,
   changes: [],
 }
 
@@ -198,7 +195,6 @@ const vote1burned: Vote = {
   caller: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
   proposalId: proposal1.id,
   option: '1',
-  status: VoteStatus.pending,
   changes: [],
 }
 
@@ -208,7 +204,6 @@ const vote2: Vote = {
   caller: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
   proposalId: proposal1.id,
   option: '0',
-  status: VoteStatus.pending,
   changes: [],
 }
 
@@ -218,7 +213,6 @@ const vote3: Vote = {
   caller: 'J1YLZ3GYSHxmRY2WxGKfgxesquQN7RvgtY7HXsXoHyBKCYx',
   proposalId: proposal2.id,
   option: '0',
-  status: VoteStatus.pending,
   changes: [],
 }
 
@@ -328,7 +322,6 @@ test('Correct threshold denominator for non-electorate', async () => {
     snapshot: 1662155903,
     endDate: 1662242303,
     owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
-    status: ProposalStatus.waiting,
   }
 
   const rmrkDb = new InMemoryAdapter()
@@ -343,7 +336,6 @@ test('Correct threshold denominator for non-electorate', async () => {
       caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
       proposalId: proposal.id,
       option: '1',
-      status: VoteStatus.pending,
       changes: [],
     },
     {
@@ -352,7 +344,6 @@ test('Correct threshold denominator for non-electorate', async () => {
       caller: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       proposalId: proposal.id,
       option: '0',
-      status: VoteStatus.pending,
       changes: [],
     },
   ]
@@ -442,7 +433,6 @@ test('No winners', async () => {
     snapshot: 1662155903,
     endDate: 1662242303,
     owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
-    status: ProposalStatus.waiting,
   }
 
   const votes: Vote[] = [
@@ -452,7 +442,6 @@ test('No winners', async () => {
       caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
       proposalId: proposal.id,
       option: '0',
-      status: VoteStatus.pending,
       changes: [],
     },
     {
@@ -461,7 +450,6 @@ test('No winners', async () => {
       caller: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       proposalId: proposal.id,
       option: '0',
-      status: VoteStatus.pending,
       changes: [],
     },
     {
@@ -470,7 +458,6 @@ test('No winners', async () => {
       caller: 'J1YLZ3GYSHxmRY2WxGKfgxesquQN7RvgtY7HXsXoHyBKCYx',
       proposalId: proposal.id,
       option: '1',
-      status: VoteStatus.pending,
       changes: [],
     },
     {
@@ -479,7 +466,6 @@ test('No winners', async () => {
       caller: 'GqC37KSFFeGAoL7YxSeP1YDwr85WJvLmDDQiSaprTDAm8Jj',
       proposalId: proposal.id,
       option: '2',
-      status: VoteStatus.pending,
       changes: [],
     },
   ]
@@ -527,7 +513,6 @@ test('Electorate winner', async () => {
     snapshot: 1662155903,
     endDate: 1662242303,
     owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
-    status: ProposalStatus.waiting,
   }
 
   const votes: Vote[] = [
@@ -537,7 +522,6 @@ test('Electorate winner', async () => {
       caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
       proposalId: proposal.id,
       option: '0',
-      status: VoteStatus.pending,
       changes: [],
     },
     {
@@ -546,7 +530,6 @@ test('Electorate winner', async () => {
       caller: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
       proposalId: proposal.id,
       option: '0',
-      status: VoteStatus.pending,
       changes: [],
     },
     {
@@ -555,7 +538,6 @@ test('Electorate winner', async () => {
       caller: 'J1YLZ3GYSHxmRY2WxGKfgxesquQN7RvgtY7HXsXoHyBKCYx',
       proposalId: proposal.id,
       option: '1',
-      status: VoteStatus.pending,
       changes: [],
     },
   ]
@@ -604,7 +586,6 @@ test('nftWeight counts multiple NFTs', async () => {
     snapshot: 1662155903,
     endDate: 1662242303,
     owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
-    status: ProposalStatus.waiting,
   }
 
   const votes: Vote[] = [
@@ -614,7 +595,6 @@ test('nftWeight counts multiple NFTs', async () => {
       caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
       proposalId: proposal.id,
       option: '0',
-      status: VoteStatus.pending,
       changes: [],
     },
   ]
@@ -659,7 +639,6 @@ test("nftWeight=false doesn't count multiple NFTs", async () => {
     snapshot: 1662155903,
     endDate: 1662242303,
     owner: 'HjtDiyd4A7wG8Dz54Nkrze1B5AGbXGJbfhr6qiMQv4tVRvh',
-    status: ProposalStatus.waiting,
   }
 
   const votes: Vote[] = [
@@ -669,7 +648,6 @@ test("nftWeight=false doesn't count multiple NFTs", async () => {
       caller: 'HeyRMRK7L7APFpBrBqeY62dNhFKVGP4JgwQpcog2VTb3RMU',
       proposalId: proposal.id,
       option: '0',
-      status: VoteStatus.pending,
       changes: [],
     },
   ]

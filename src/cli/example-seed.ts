@@ -8,7 +8,7 @@ import {
   randParagraph,
   randPhrase,
 } from '@ngneat/falso'
-import { Proposal, ProposalStatus } from '@prisma/client'
+import { Proposal } from '@prisma/client'
 
 /**
  * Create random custodians and proposals and add them to the database
@@ -62,7 +62,6 @@ async function main() {
           nftWeight: randBoolean(),
           electorate: randBoolean(),
           owner: randAlphaNumeric({ length: 47 }).join(''),
-          status: ProposalStatus.waiting,
         }))
     })
     .flat()
