@@ -69,7 +69,11 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
       registerInteraction = Register.fromRemark(remark)
     } catch (e) {
       // TODO: Save error to database
-      console.log(`Invalid ${INTERACTION_TYPES.REGISTER}`, (e as Error).message)
+      console.log(
+        `Invalid ${INTERACTION_TYPES.REGISTER}`,
+        (e as Error).message,
+        remark.remark
+      )
       rmrkdaoInteractionOutcome.inc({
         interaction: INTERACTION_TYPES.REGISTER,
         outcome: Outcome.failed,
@@ -97,7 +101,11 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
       proposeInteraction = await Propose.fromRemark(remark, this.db)
     } catch (e) {
       // TODO: Save error to database
-      console.log(`Invalid ${INTERACTION_TYPES.PROPOSE}`, (e as Error).message)
+      console.log(
+        `Invalid ${INTERACTION_TYPES.PROPOSE}`,
+        (e as Error).message,
+        remark.remark
+      )
       rmrkdaoInteractionOutcome.inc({
         interaction: INTERACTION_TYPES.PROPOSE,
         outcome: Outcome.failed,
@@ -126,7 +134,11 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
       voteInteraction = await VoteInteraction.fromRemark(remark, this.db)
     } catch (e) {
       // TODO: Save error to database
-      console.log(`Invalid ${INTERACTION_TYPES.VOTE}`, (e as Error).message)
+      console.log(
+        `Invalid ${INTERACTION_TYPES.VOTE}`,
+        (e as Error).message,
+        remark.remark
+      )
       rmrkdaoInteractionOutcome.inc({
         interaction: INTERACTION_TYPES.VOTE,
         outcome: Outcome.failed,
@@ -153,7 +165,11 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
       submitInteraction = await SubmitInteraction.fromRemark(remark, this.db)
     } catch (e) {
       // TODO: Save error to database
-      console.log(`Invalid ${INTERACTION_TYPES.SUBMIT}`, (e as Error).message)
+      console.log(
+        `Invalid ${INTERACTION_TYPES.SUBMIT}`,
+        (e as Error).message,
+        remark.remark
+      )
       rmrkdaoInteractionOutcome.inc({
         interaction: INTERACTION_TYPES.SUBMIT,
         outcome: Outcome.failed,
@@ -173,7 +189,7 @@ export class RmrkExtensionHandler implements IRmrkExtensionHandler {
   }
 
   private async deregister(remark: Remark): Promise<any> {
-    console.log('DEREGISTER is not implemented')
+    console.log('DEREGISTER is not implemented', remark.remark)
     rmrkdaoInteractionOutcome.inc({
       interaction: INTERACTION_TYPES.DEREGISTER,
       outcome: Outcome.failed,

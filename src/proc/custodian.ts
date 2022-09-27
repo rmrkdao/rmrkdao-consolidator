@@ -78,13 +78,14 @@ const listenAndProcess = async () => {
 
   console.log(`Custodian ready: ${secretaryOfState.getKusamaAddress()}`)
 
-  // Lock to be used to prevent multiple blocks to be processed simultaneously
+  // Lock to be used to prevent multiple PROPOSALs to be processed simultaneously (one at a time!)
   let syncLock = false
 
-  // Subscribe to the new headers on-chain. The callback is fired when new headers
-  // are found, the call itself returns a promise with a subscription that can be
-  // used to unsubscribe from the newHead subscription
-  const unsubscribe = await api.rpc.chain.subscribeNewHeads(async (header) => {
+  /**
+   * Continuously loop forever checking approximately every 10 seconds for
+   * ready-to-process PROPOSALs and process them.
+   */
+  const unsubscribe = setInterval(async () => {
     try {
       // Check if the lock is taken
       if (syncLock) {
@@ -92,9 +93,6 @@ const listenAndProcess = async () => {
       }
       // Lock
       syncLock = true
-
-      const blockNumber = Number(header.number)
-      console.log(`Chain is at block: #${blockNumber}`)
 
       await syncResultCreationQueue({
         custodianKusamaAddress: secretaryOfState.getKusamaAddress(),
@@ -174,11 +172,11 @@ const listenAndProcess = async () => {
       // Unlock
       syncLock = false
     } catch (e) {
-      unsubscribe()
+      clearInterval(unsubscribe)
       await api.disconnect()
       throw e
     }
-  })
+  }, 10 * 1000)
 }
 
 /**
