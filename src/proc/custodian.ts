@@ -159,6 +159,7 @@ const listenAndProcess = async () => {
             winningOptions: result.winningOptions,
             thresholdDenominator: result.thresholdDenominator,
             recertify: result.recertify,
+            custodian: secretaryOfState.getKusamaAddress(),
           },
         })
 
@@ -192,13 +193,16 @@ const syncResultCreationQueue = async ({
   const proposals = await prisma.proposal.findMany({
     where: {
       // @see https://github.com/prisma/prisma/discussions/2772#discussioncomment-1712222
-      queue: { none: {} },
+      queue: { none: {} }, // TODO: Will need to allow  for adding to queue when the same proposal has a RECERTIFY #3kghj5c
       custodian: custodianKusamaAddress, // TODO: Consider a wallet with multiple addresses
     },
   })
 
   await prisma.resultCreationQueue.createMany({
-    data: proposals.map((proposal) => ({ proposalId: proposal.id })),
+    data: proposals.map((proposal) => ({
+      proposalId: proposal.id,
+      custodian: custodianKusamaAddress,
+    })),
   })
 
   // Fail queue records that have a status of about_to_submit

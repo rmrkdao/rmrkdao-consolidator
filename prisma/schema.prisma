@@ -140,7 +140,6 @@ model Proposal {
   @@map("proposal")
 }
 
-
 model Vote {
   id         String @id
   block      Int
@@ -173,10 +172,12 @@ model Result {
 model ResultCreationQueue {
   proposalId String                    @id @map("proposal_id")
   status     ResultCreationQueueStatus @default(waiting) @map("status")
+  custodian  String?
 
   proposal Proposal @relation(fields: [proposalId], references: [id])
 
   @@index([status])
+  @@index([custodian])
   @@map("result_creation_queue")
 }
 
@@ -189,9 +190,11 @@ model ResultSubmission {
   winningOptions       Json     @map("winning_options")
   thresholdDenominator Float    @map("threshold_denominator")
   recertify            Boolean
+  custodian            String?
 
   @@index([addedToDb])
   @@index([proposalId])
+  @@index([custodian])
   @@map("result_submission")
 }
 
