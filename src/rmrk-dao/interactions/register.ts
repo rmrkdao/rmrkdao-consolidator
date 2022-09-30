@@ -30,7 +30,7 @@ export class Register implements ICustodian {
     validateRemarkDaoBase(remark.remark, INTERACTION_TYPES.REGISTER)
     let payload = Register.parseData(dataString)
 
-    // TODO: If registering (submitting a REGISTER interaction for an already existing CUSTODIAN) check that the last REGISTER event was 14,400 blocks ago
+    // TODO: If registering (submitting a REGISTER interaction for an already existing CUSTODIAN) check that the last REGISTER event was 14,400 blocks ago (#3kp6cr1)
     // @see https://github.com/adamsteeber/rmrkdao-spec/blob/38f42e8d3ac54137f1b6d93bced7c880bfc380e9/interactions/REGISTER.md
 
     // Assumes that the remark.caller is in Kusama format
